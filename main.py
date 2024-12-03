@@ -14,6 +14,8 @@ import titlescr
 import seedscr
 import savescr
 import worldsscr
+import creditsscr
+import keybindsscr
 
 import renderer
 
@@ -33,6 +35,14 @@ def main():
 
     if option == "exit":
         sys.exit()
+    if option == "credits":
+        creditsscreen = creditsscr.CreditsScreen(screen)
+        creditsscreen.run()
+        main()
+    if option == "keybinds":
+        keybindsscreen = keybindsscr.KeybindsScreen(screen)
+        keybindsscreen.run()
+        main()
     if option == "load":
         worldsscreen = worldsscr.WorldsScreen(screen)
         worldname = worldsscreen.run()

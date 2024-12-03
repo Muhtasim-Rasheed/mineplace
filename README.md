@@ -22,6 +22,7 @@ Mineplace is a simple Minecraft clone made with Python and Pygame.
 - Arrow keys to move block selector
 - `Space` to place block
 - `C` to break block
+- `KL` to switch block to place
 - `Escape` to exit out of almost all menus (fixing this soon)
 
 ## Credits

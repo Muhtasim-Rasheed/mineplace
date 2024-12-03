@@ -6,10 +6,12 @@ class TitleScreen:
         self.screen = screen
         self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 30)
         self.big_font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 60)
-        self.options = ["new", "load", "exit"]
+        self.options = ["new", "load", "credits", "keybinds", "exit"]
         self.translations = {
             "new": "New Game",
             "load": "Load Game",
+            "credits": "Credits",
+            "keybinds": "Keybinds",
             "exit": "Exit"
         }
         self.current = 0
@@ -45,7 +47,7 @@ class TitleScreen:
             titletext = Text("Mineplace", self.big_font, (255, 255, 0))
             titletext.draw(self.screen, 200, 200)
 
-            versiontext = Text("v1.0", self.font, (255, 255, 255))
+            versiontext = Text("v1.1", self.font, (255, 255, 255))
             versiontext.draw(self.screen, 200, 250)
             
             steve = pygame.transform.scale(self.steve["steve"], (self.steve["steve"].get_width() * 16, self.steve["steve"].get_height() * 16))
