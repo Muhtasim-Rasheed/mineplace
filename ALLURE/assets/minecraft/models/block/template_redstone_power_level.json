@@ -1,0 +1,27 @@
+{
+	"credit": "Created by Stridey",
+	"ambientocclusion": false,
+	"textures": {
+		"level": "#level"
+	},
+	"elements": [
+		{
+			"name": "number",
+			"from": [3.75, 1.1, 4.25],
+			"to": [11.75, 1.1, 12.25],
+			"faces": {
+				"up": {"uv": [0, 0, 4, 4], "texture": "#level"},
+				"down": {"uv": [0, 0, 4, 4], "rotation": 180, "texture": "#level", "cullface": "down"}
+			}
+		},
+		{
+			"name": "outline",
+			"from": [3, 1.1, 4],
+			"to": [13, 1.1, 14],
+			"faces": {
+				"up": {"uv": [4, 0, 9, 5], "texture": "#level", "tintindex": 0},
+				"down": {"uv": [4, 0, 9, 5], "rotation": 180, "texture": "#level", "cullface": "down", "tintindex": 0}
+			}
+		}
+	]
+}

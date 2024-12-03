@@ -1,0 +1,66 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"particle": "block/anvil_allure",
+		"body": "block/anvil_allure"
+	},
+	"elements": [
+		{
+			"name": "Anvil base",
+			"from": [2, 0, 2],
+			"to": [14, 4, 14],
+			"faces": {
+				"north": {"uv": [0, 6.5, 6, 8.5], "texture": "#body"},
+				"east": {"uv": [0, 6.5, 6, 8.5], "texture": "#body"},
+				"south": {"uv": [0, 6.5, 6, 8.5], "texture": "#body"},
+				"west": {"uv": [0, 6.5, 6, 8.5], "texture": "#body"},
+				"up": {"uv": [8, 0, 14, 6], "texture": "#body"},
+				"down": {"uv": [8, 0, 14, 6], "texture": "#body"}
+			}
+		},
+		{
+			"name": "Lower narrow portion",
+			"from": [4, 4, 3],
+			"to": [12, 5, 13],
+			"faces": {
+				"north": {"uv": [0, 6, 4, 6.5], "texture": "#body"},
+				"east": {"uv": [0, 5.5, 5, 6], "texture": "#body"},
+				"south": {"uv": [0, 6, 4, 6.5], "texture": "#body"},
+				"west": {"uv": [0, 5.5, 5, 6], "texture": "#body"},
+				"up": {"uv": [9, 0.5, 13, 5.5], "texture": "#body"},
+				"down": {"uv": [9, 0.5, 13, 5.5], "texture": "#body"}
+			}
+		},
+		{
+			"name": "Wider section beneath top portion",
+			"from": [6, 5, 4],
+			"to": [10, 10, 12],
+			"faces": {
+				"north": {"uv": [4, 3, 6, 5.5], "texture": "#body"},
+				"east": {"uv": [4, 5.5, 0, 3], "rotation": 180, "texture": "#body"},
+				"south": {"uv": [4, 3, 6, 5.5], "texture": "#body"},
+				"west": {"uv": [0, 3, 4, 5.5], "texture": "#body"}
+			}
+		},
+		{
+			"name": "Anvil top",
+			"from": [3, 10, 0],
+			"to": [13, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 8.5, 5, 11.5], "texture": "#body"},
+				"east": {"uv": [8, 3, 0, 0], "rotation": 180, "texture": "#body"},
+				"south": {"uv": [0, 8.5, 5, 11.5], "texture": "#body"},
+				"west": {"uv": [0, 0, 8, 3], "texture": "#body"},
+				"up": {"uv": [3, 0, 13, 16], "rotation": 180, "texture": "#top"},
+				"down": {"uv": [9.5, 8, 14.5, 16], "rotation": 180, "texture": "#body"}
+			}
+		}
+	],
+	"display": {
+		"fixed": {
+			"rotation": [0, 90, 0],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

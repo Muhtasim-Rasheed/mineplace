@@ -1,0 +1,42 @@
+{
+    "model": {
+        "type": "minecraft:condition",
+        "property": "minecraft:using_item",
+        "on_false": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/honey_bottle"
+        },
+        "on_true": {
+            "property": "minecraft:use_duration",
+            "scale": 0.03,
+            "type": "minecraft:range_dispatch",
+            "entries": [
+                {
+                    "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/honey_bottle_0"
+                    },
+                    "threshold": 0.4
+                },
+                {
+                    "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/honey_bottle_1"
+                    },
+                    "threshold": 0.7
+                },
+                {
+                    "model": {
+                        "type": "minecraft:model",
+                        "model": "minecraft:item/honey_bottle_2"
+                    },
+                    "threshold": 1
+                }
+            ],
+            "fallback": {
+                "type": "minecraft:model",
+                "model": "minecraft:item/honey_bottle"
+            }
+        }
+    }
+}

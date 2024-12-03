@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/infested_template",
+  "textures": {
+    "down":  "minecraft:block/mossy_stone_bricks",
+    "up":    "minecraft:block/mossy_stone_bricks",
+    "north": "minecraft:block/mossy_stone_bricks",
+    "south": "minecraft:block/mossy_stone_bricks",
+    "west":  "minecraft:block/mossy_stone_bricks",
+    "east":  "minecraft:block/mossy_stone_bricks"
+  }
+}

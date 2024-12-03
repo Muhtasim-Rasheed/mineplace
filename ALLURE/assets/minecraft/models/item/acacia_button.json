@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/button_template",
+  "textures": {
+    "layer0": "minecraft:item/acacia_button"
+  }
+}

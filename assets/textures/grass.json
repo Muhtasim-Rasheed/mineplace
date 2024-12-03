@@ -1,0 +1,6 @@
+{
+	"textures": {
+		"layer0": "grass.png",
+		"layer1": "grass_overlay.png"
+	}
+}

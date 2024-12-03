@@ -1,0 +1,31 @@
+{
+    "providers":
+    [
+        {
+            "type":"bitmap","file":"minecraft:font\/ascended.png",
+            "ascent":6,
+            "height":8,
+            "chars":[
+                "\u0067\u006A\u0070\u0071\u0079\u03b3\u03b7\u03bc\u03c1\u03c2\u03c6\u03c8\u0440\u0443\u05DA\u05E3",
+                "\u05E5\u05E7\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"]
+        },
+        {
+            "type":"bitmap","file":"minecraft:gui\/font_icons\/leave.png",
+            "ascent":13,
+            "height":16,
+            "chars":["\ueee0"]
+        },
+        {
+            "type":"bitmap","file":"minecraft:gui\/font_icons\/close.png",
+            "ascent":13,
+            "height":16,
+            "chars":["\ueee1"]
+        },
+        {
+            "type":"bitmap","file":"minecraft:gui\/font_icons\/settings.png",
+            "ascent":13,
+            "height":16,
+            "chars":["\ueee2"]
+        }
+    ]
+}

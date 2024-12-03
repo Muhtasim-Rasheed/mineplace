@@ -1,0 +1,15 @@
+{
+"ambientocclusion": false,
+	"elements": [
+        {
+		"name": "redstonepowerlevel",
+		"from": [ 6.0, -0.11, 6.0 ], 
+		"to": [ 10.0, 1.01, 10.0 ], 
+		"shade": false,
+		"faces": {
+			"down": { "texture": "#rspl", "uv": [ 0, 0, 16, 16 ] },
+			"up": { "texture": "#rspl", "uv": [ 0, 0, 16, 16 ] }
+				}
+		}
+				]
+}

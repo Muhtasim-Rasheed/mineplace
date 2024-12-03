@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/waxed_template",
+  "textures": {
+    "down":  "minecraft:block/copper_bulb",
+    "up":    "minecraft:block/copper_bulb",
+    "north": "minecraft:block/copper_bulb",
+    "south": "minecraft:block/copper_bulb",
+    "west":  "minecraft:block/copper_bulb",
+    "east":  "minecraft:block/copper_bulb"
+  }
+}

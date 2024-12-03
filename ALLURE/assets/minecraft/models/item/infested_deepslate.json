@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/infested_template",
+  "textures": {
+    "down":  "minecraft:block/deepslate_top",
+    "up":    "minecraft:block/deepslate_top",
+    "north": "minecraft:block/deepslate",
+    "south": "minecraft:block/deepslate",
+    "west":  "minecraft:block/deepslate",
+    "east":  "minecraft:block/deepslate"
+  }
+}

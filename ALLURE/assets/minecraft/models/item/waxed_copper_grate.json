@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/waxed_template",
+  "textures": {
+    "down":  "minecraft:block/copper_grate",
+    "up":    "minecraft:block/copper_grate",
+    "north": "minecraft:block/copper_grate",
+    "south": "minecraft:block/copper_grate",
+    "west":  "minecraft:block/copper_grate",
+    "east":  "minecraft:block/copper_grate"
+  }
+}

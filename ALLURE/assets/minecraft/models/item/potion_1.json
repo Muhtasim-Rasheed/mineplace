@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/potion_overlay_1",
+    "layer1": "minecraft:item/potion"
+  }
+}

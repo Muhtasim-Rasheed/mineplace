@@ -1,0 +1,14 @@
+{
+    "pack": {
+        "pack_format": 15,
+        "supported_formats": {"min_inclusive": 15, "max_inclusive": 46},
+        "description": "\u00a76• Allure \u00A7l1.5 Preview\u00a7r\u00a76\n• Made By \u00a7e\u00a7lP4ncake"
+    },
+    "language": {
+        "en_usai": {
+            "name": "\u00a76\u00a7lEnglish - Allure Icons\u00a7c  EXPERIMENTAL\u00a7r",
+            "region": "US",
+            "bidirectional": false
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "credit":"By P4ncake",
+    "parent": "block/block",
+    "textures": {
+		"outline": "block/infested_outline"
+	},
+    "elements": [
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "texture": "#down", "cullface": "down" },
+                "up":    { "texture": "#up", "cullface": "up" },
+                "north": { "texture": "#north", "cullface": "north" },
+                "south": { "texture": "#south", "cullface": "south" },
+                "west":  { "texture": "#west", "cullface": "west" },
+                "east":  { "texture": "#east", "cullface": "east" }
+            }
+        },
+        {
+			"from": [17, 17, 17],
+			"to": [-1, -1, -1],
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#outline"},
+				"east": {"uv": [16, 0, 0, 16], "texture": "#outline"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#outline"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#outline"},
+				"up": {"uv": [16, 0, 0, 16], "texture": "#outline"},
+				"down": {"uv": [16, 0, 0, 16], "texture": "#outline"}
+			}
+		}
+    ]
+}

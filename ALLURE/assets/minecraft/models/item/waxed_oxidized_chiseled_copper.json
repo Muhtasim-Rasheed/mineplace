@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/waxed_template",
+  "textures": {
+    "down":  "minecraft:block/oxidized_chiseled_copper",
+    "up":    "minecraft:block/oxidized_chiseled_copper",
+    "north": "minecraft:block/oxidized_chiseled_copper",
+    "south": "minecraft:block/oxidized_chiseled_copper",
+    "west":  "minecraft:block/oxidized_chiseled_copper",
+    "east":  "minecraft:block/oxidized_chiseled_copper"
+  }
+}

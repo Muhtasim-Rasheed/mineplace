@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/infested_template",
+  "textures": {
+    "down":  "minecraft:block/cobblestone",
+    "up":    "minecraft:block/cobblestone",
+    "north": "minecraft:block/cobblestone",
+    "south": "minecraft:block/cobblestone",
+    "west":  "minecraft:block/cobblestone",
+    "east":  "minecraft:block/cobblestone"
+  }
+}
