@@ -11,43 +11,28 @@ class Renderer:
         self.game_height = game_height
         self.game_block_scale = game_block_scale
         self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 40)
-        self.texture_names = ["stone", "dirt", "cobblestone", "oak_planks", "oak_log", "missing"]
+        self.texture_names = [
+                "dirt",
+                "stone", "cobblestone", "stone_bricks",
+                "coal_ore", "iron_ore", "gold_ore", "diamond_ore",
+                "oak_planks", "oak_log",
+                "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
+                "missing"
+                ]
         self.textures = {}
         self.load_textures()
         self.background = Background(screen)
         self.flippable_blocks = ["stone"]
         self.flip_block_grid = [] # Grid of 0, 1, 2, 3 (0 = None, 1 = H, 2 = V, 3 = Both)
         self.calculate_flip_block()
-
-    # def load_textures(self):
-    #     for name in self.texture_names:
-    #         texture = pygame.image.load(utils.resource_path(f"assets/textures/{name}.png"))
-    #         self.textures[name] = texture
-
-    #     # Some textures have overlay textures, so find all json files in the textures folder
-    #     for filename in ["assets/textures/" + f for f in os.listdir("assets/textures") if f.endswith(".json")]:
-    #         with open(filename, "r") as file:
-    #             # JSON file looks like:
-    #             # {
-    #             #     "textures": {
-    #             #         "layer0": "grass.png",
-    #             #         "layer1": "grass_overlay.png"
-    #             #     }
-    #             # }
-
-    #             data = json.load(file)
-    #             loaded_textures = {}
-    #             for texture_name, texture_filename in data["textures"].items():
-    #                 texture = pygame.image.load(f"assets/textures/{texture_filename}")
-    #                 loaded_textures[texture_name] = texture
-    #             self.textures[os.path.basename(filename).replace(".json", "")] = loaded_textures
+        self.skip_shadow = False
 
     def load_textures(self):
         for name in self.texture_names:
             texture_path = utils.resource_path(f"assets/textures/{name}.png")
             texture = pygame.image.load(texture_path)
             self.textures[name] = texture
-    
+
         # Process JSON texture files
         textures_dir = utils.resource_path("assets/textures")
         for filename in [f for f in os.listdir(textures_dir) if f.endswith(".json")]:
@@ -60,7 +45,7 @@ class Renderer:
                     texture = pygame.image.load(texture_path)
                     loaded_textures[texture_name] = texture
                 self.textures[os.path.basename(filename).replace(".json", "")] = loaded_textures
-    
+
     def calculate_flip_block(self):
         # Returns 0, 1, 2, 3 (0 = None, 1 = H, 2 = V, 3 = Both) in a 2D grid
         for _ in range(self.game_height):
@@ -110,26 +95,37 @@ class Renderer:
                 shadow.set_alpha(neighbourcount * (255 // 12))
         surface.blit(shadow, (0, 0))
 
-    def render(self, world, player):
+    def render(self, world, player, isNight=False):
         player_x, player_y = player.pos
 
-        self.background.draw()
+        self.background.draw(isNight)
+
+        special_naming_cases = ["oak_stairs", "oak_slab"]
 
         for y, column in enumerate(world):
             for x, block in enumerate(column):
                 if block.name == "air":
                     continue
-                if block.name not in self.textures:
-                    block.name = "missing"
 
-                
-                if isinstance(self.textures[block.name], dict):
+                # Determine the texture name to use without modifying block.name
+                if block.name not in self.textures and block.name not in special_naming_cases:
+                    print(f"Block {block.name} not found in textures")
+                    texture_to_use = "missing"
+                elif block.name == "oak_stairs":
+                    texture_to_use = "oak_stairs_" + block.getattr("orientation")
+                elif block.name == "oak_slab":
+                    texture_to_use = "oak_slab_" + block.getattr("orientation")
+                else:
+                    texture_to_use = block.name
+
+                if isinstance(self.textures[texture_to_use], dict):
                     # If the block has multiple layers, render them in order
-                    for texture_name in self.textures[block.name]:
-                        texture = self.textures[block.name][texture_name]
+                    for texture_name in self.textures[texture_to_use]:
+                        texture = self.textures[texture_to_use][texture_name]
                         texture = pygame.transform.scale(texture, (self.game_block_scale, self.game_block_scale))
-                        neighbourcount, neighbours = self.calculate_block_neighbourcount(world, x, y)
-                        self.add_shadow(texture, neighbourcount, neighbours)
+                        if not self.skip_shadow:
+                            neighbourcount, neighbours = self.calculate_block_neighbourcount(world, x, y)
+                            self.add_shadow(texture, neighbourcount, neighbours)
 
                         if block.name in self.flippable_blocks:
                             if x >= self.game_width or y >= self.game_height:
@@ -145,15 +141,16 @@ class Renderer:
                         self.screen.blit(texture, (x * self.game_block_scale, y * self.game_block_scale))
                     continue
 
-                texture = self.textures[block.name]
-                if block.name == "oak_log":
+                texture = self.textures[texture_to_use]
+                if texture_to_use == "oak_log":
                     if block.getattr("horiz") == "T":
                         texture = pygame.transform.rotate(texture, 90)
                 # Resize the texture to the game block scale
                 texture = pygame.transform.scale(texture, (self.game_block_scale, self.game_block_scale))
                 # Add shadow
-                neighbourcount, neighbors = self.calculate_block_neighbourcount(world, x, y)
-                self.add_shadow(texture, neighbourcount, neighbors)
+                if not self.skip_shadow:
+                    neighbourcount, neighbors = self.calculate_block_neighbourcount(world, x, y)
+                    self.add_shadow(texture, neighbourcount, neighbors)
 
                 # Flip the texture
                 if block.name in self.flippable_blocks:
@@ -169,7 +166,6 @@ class Renderer:
 
                 self.screen.blit(texture, (x * self.game_block_scale, y * self.game_block_scale))
 
-        # pygame.draw.rect(self.screen, (255, 0, 0), (player_x * self.game_block_scale, player_y * self.game_block_scale, self.game_block_scale, self.game_block_scale))
         steve_image = pygame.image.load(utils.resource_path("assets/game/steve.png"))
         steve_image = pygame.transform.scale(steve_image, (self.game_block_scale, self.game_block_scale))
         self.screen.blit(steve_image, (player_x * self.game_block_scale, player_y * self.game_block_scale))
@@ -179,31 +175,41 @@ class Renderer:
         blockselector_y += player_y
 
         selected_block = player.placeable_blocks[player.selected_block]
-        if selected_block.name not in self.textures:
-            selected_block.name = "missing"
-        texture = self.textures[selected_block.name]
-        # Woah woah woah! What if its a dict from a JSON file?
+        if selected_block.name not in self.textures and selected_block.name not in special_naming_cases:
+            texture_to_use = "missing"
+        elif selected_block.name == "oak_stairs":
+            texture_to_use = "oak_stairs_" + selected_block.getattr("orientation")
+        elif selected_block.name == "oak_slab":
+            texture_to_use = "oak_slab_" + selected_block.getattr("orientation")
+        else:
+            texture_to_use = selected_block.name
+
+        texture = self.textures[texture_to_use]
         if isinstance(texture, dict):
-            # Merge all layers
             texture = pygame.Surface((self.game_block_scale, self.game_block_scale))
-            for layer in self.textures[selected_block.name].values():
+            for layer in self.textures[texture_to_use].values():
                 layer = pygame.transform.scale(layer, (self.game_block_scale, self.game_block_scale))
                 texture.blit(layer, (0, 0))
-        if selected_block.name == "oak_log":
+        if texture_to_use == "oak_log":
             if selected_block.getattr("horiz") == "T":
                 texture = pygame.transform.rotate(texture, 90)
         texture = pygame.transform.scale(texture, (self.game_block_scale, self.game_block_scale))
-        # A bit transparent
         texture.set_alpha(150)
         self.screen.blit(texture, (blockselector_x * self.game_block_scale, blockselector_y * self.game_block_scale))
 
-        pygame.draw.rect(self.screen, (255, 255, 255), (blockselector_x * self.game_block_scale, blockselector_y * self.game_block_scale, self.game_block_scale, self.game_block_scale), 1)
+        pygame.draw.rect(self.screen, (255, 255, 255), 
+                         (blockselector_x * self.game_block_scale, blockselector_y * self.game_block_scale, 
+                          self.game_block_scale, self.game_block_scale), 1)
 
 class Background:
     def __init__(self, screen):
-        self.image = pygame.image.load(utils.resource_path("assets/game/sky.png"))
-        self.image = pygame.transform.scale(self.image, (screen.get_width(), screen.get_height()))
+        self.day = pygame.image.load(utils.resource_path("assets/game/day.png"))
+        self.day = pygame.transform.scale(self.day, (screen.get_width(), screen.get_height()))
+        self.night = pygame.image.load(utils.resource_path("assets/game/night.png"))
+        self.night = pygame.transform.scale(self.night, (screen.get_width(), screen.get_height()))
         self.screen = screen
 
-    def draw(self):
-        self.screen.blit(self.image, (0, 0))
+    def draw(self, night=False):
+        self.screen.blit(self.day, (0, 0))
+        if night:
+            self.screen.blit(self.night, (0, 0))

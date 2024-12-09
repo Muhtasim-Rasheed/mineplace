@@ -1,15 +1,21 @@
 import pygame
 import utils
+import os
+from PIL import Image, ImageFilter
+
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
 
 class TitleScreen:
     def __init__(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 30)
         self.big_font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 60)
-        self.options = ["new", "load", "credits", "keybinds", "exit"]
+        self.options = ["new", "load", "settings", "credits", "keybinds", "exit"]
         self.translations = {
             "new": "New Game",
             "load": "Load Game",
+            "settings": "Settings",
             "credits": "Credits",
             "keybinds": "Keybinds",
             "exit": "Exit"
@@ -47,7 +53,7 @@ class TitleScreen:
             titletext = Text("Mineplace", self.big_font, (255, 255, 0))
             titletext.draw(self.screen, 200, 200)
 
-            versiontext = Text("v1.1", self.font, (255, 255, 255))
+            versiontext = Text("v1.2", self.font, (255, 255, 255))
             versiontext.draw(self.screen, 200, 250)
             
             steve = pygame.transform.scale(self.steve["steve"], (self.steve["steve"].get_width() * 16, self.steve["steve"].get_height() * 16))
@@ -65,6 +71,7 @@ class TitleScreen:
                 if event.type == pygame.QUIT:
                     return "exit"
                 if event.type == pygame.KEYDOWN:
+                    play_click_sound()
                     if event.key == pygame.K_UP:
                         self.current -= 1
                     if event.key == pygame.K_DOWN:
@@ -103,7 +110,15 @@ class Text:
 class Panorama:
     def __init__(self, screen):
         self.screen = screen
-        self.panorama = pygame.image.load(utils.resource_path("assets/game/panorama.png"))
+        # IF panorama (blurred) exists, load it, otherwise load the normal panorama and blur it with PIL (radius=8)
+        if os.path.exists(utils.resource_path("assets/game/panorama_blurred.png")):
+            self.panorama = pygame.image.load(utils.resource_path("assets/game/panorama_blurred.png"))
+        else:
+            # self.panorama = pygame.image.load(utils.resource_path("assets/game/panorama.png"))
+            panorama_image = Image.open(utils.resource_path("assets/game/panorama.png"))
+            panorama_image = panorama_image.filter(ImageFilter.GaussianBlur(8))
+            panorama_image.save(utils.resource_path("assets/game/panorama_blurred.png"))
+            self.panorama = pygame.image.load(utils.resource_path("assets/game/panorama_blurred.png"))
         # Both the panorama and the screen are (64*24)x(32*24) pixels, so we need to scale the panorama by 2
         # to actually be able to scroll it
         self.panorama = pygame.transform.scale(self.panorama, (64*24 * 2, 32*24 * 2))

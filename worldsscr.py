@@ -1,6 +1,9 @@
 import utils
 import pygame
 
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
+
 class WorldsScreen:
     def __init__(self, screen, options_per_page=10):
         self.screen = screen
@@ -40,6 +43,7 @@ class WorldsScreen:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
+                    play_click_sound()
                     if event.key == pygame.K_UP:
                         self.current = max(0, self.current - 1)  # Prevent going below 0
                     if event.key == pygame.K_DOWN:

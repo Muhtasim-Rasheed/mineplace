@@ -2,6 +2,9 @@ import pygame
 import random
 import utils
 
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
+
 class SeedScreen():
     def __init__(self, screen):
         self.screen = screen
@@ -21,6 +24,7 @@ class SeedScreen():
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
+                        play_click_sound()
                         if self.seed_input.text == "":
                             return str(random.randint(0, 9999999999999999))
                         return self.seed_input.text

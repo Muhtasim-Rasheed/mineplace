@@ -1,6 +1,9 @@
 import utils
 import pygame
 
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
+
 class CreditsScreen:
     def __init__(self, screen):
         self.screen = screen
@@ -32,6 +35,7 @@ class CreditsScreen:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
+                    play_click_sound()
                     return "exit"
 
 class Text:

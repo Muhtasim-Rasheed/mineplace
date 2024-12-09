@@ -10,10 +10,13 @@ Mineplace is a simple Minecraft clone made with Python and Pygame.
     - Dirt
     - Stone
     - Cobblestone
+    - Stone Bricks
+    - Ores (Coal, Iron, Gold, Diamond)
     - Oak Planks
     - Oak Log
 - Player (stuck in creative mode, no gravity)
 - Simple lighting
+- Day / Night (12 ingame hours = 10 IRL minutes)
 - World saving and loading
 
 ## Controls
@@ -24,6 +27,9 @@ Mineplace is a simple Minecraft clone made with Python and Pygame.
 - `C` to break block
 - `KL` to switch block to place
 - `Escape` to exit out of almost all menus (fixing this soon)
+- `Up / Down` to go through world list or any option list
+- `Left / Right` to go through pages in world list or change settings value in settings menu
+- `D` (in world list) to delete world
 
 ## Credits
 

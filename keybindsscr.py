@@ -1,17 +1,23 @@
 import utils
 import pygame
 
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
+
 class KeybindsScreen:
     def __init__(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 24)
         self.keybinds = [
-            "WASD - Move (no gravity included)",
-            "Arrow keys - Move the block selector",
-            "Space - Place block",
-            "C - Break block",
-            "KL - Switch blocks",
-            "Escape - Exit out of most screens"
+            "WASD to move",
+            "Arrow keys to move block selector",
+            "Space to place block",
+            "C to break block",
+            "KL to switch block to place",
+            "Escape to exit out of almost all menus (fixing this soon)",
+            "Up / Down to go through world list or any option list",
+            "Left / Right to go through pages in world list or change settings value in settings menu",
+            "D (in world list) to delete world",
         ]
 
     def run(self):
@@ -29,6 +35,7 @@ class KeybindsScreen:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
+                    play_click_sound()
                     return "exit"
 
 class Text:

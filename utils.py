@@ -3,6 +3,7 @@ import random
 import pygame
 import json
 import sys, os
+from PIL import Image, ImageFilter
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and PyInstaller """
@@ -19,6 +20,28 @@ def map_noise_to_height(noise_value, height):
     # Round to nearest integer
     return int(mapped_value)
 
+class SoundManager:
+    @staticmethod
+    def checkmixer_online():
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+
+    @staticmethod
+    def playsound(soundfile_path):
+        SoundManager.checkmixer_online()
+        pygame.mixer.music.load(soundfile_path)
+        pygame.mixer.music.play()
+
+class SettingsManager:
+    @staticmethod
+    def apply_settings(settings):
+        SoundManager.checkmixer_online()
+        pygame.mixer.music.set_volume(settings["volume"] / 100)
+        
+        panorama_image = Image.open(resource_path("assets/game/panorama.png"))
+        panorama_image = panorama_image.filter(ImageFilter.GaussianBlur(settings["panorama_blur"]))
+        panorama_image.save(resource_path("assets/game/panorama_blurred.png"))
+
 class Block:
     def __init__(self, name, attr={}):
         self.name = name
@@ -31,6 +54,9 @@ class Block:
 
     def getattr(self, key):
         return self.attr.get(key, None)
+
+    def copy(self):
+        return Block(self.name, self.attr.copy())
 
     @staticmethod
     def from_string(string):
@@ -76,6 +102,23 @@ class WorldGenerator:
             noise_value -= 2
             heightmap.append(noise_value)
 
+        oremap = []
+        for x in range(self.width):
+            column = []
+            for y in range(self.height):
+                noise_value = self.noise.noise2(x * self.scale, y * self.scale)
+                # Do NOT allow negatives, so map them from [-1, 1] to [0, 1]
+                noise_value = (noise_value + 1) / 2
+                column.append(noise_value)
+            oremap.append(column)
+
+        orethresholds = {
+            "diamond_ore": 0.66,
+            "gold_ore": 0.6,
+            "iron_ore": 0.5,
+            "coal_ore": 0.3
+        }
+
         world = []
         for x in range(self.width):
             column = []
@@ -91,13 +134,20 @@ class WorldGenerator:
                 elif y > terrain_height - 3 and y < terrain_height and not is_cave:
                     column.append(Block("dirt"))
                 elif y < terrain_height and not is_cave:
+                    # WAIT! What if we can add some ores here?
+                    for ore, threshold in orethresholds.items():
+                        if oremap[x][y] > threshold:
+                            # BUT! The higher we are, the lower chance of spawning ores
+                            if random.random() < 0.3 - (y / self.height):
+                                column.append(Block(ore))
+                            break
                     column.append(Block("stone"))
                 elif is_cave and y < terrain_height:
                     column.append(Block("air"))
                 else:
                     column.append(Block("air"))
             world.append(column)
-        
+
         # Transpose it
         world = list(map(list, zip(*world)))
 
@@ -115,9 +165,20 @@ class Player:
                 Block("dirt"),
                 Block("stone"),
                 Block("cobblestone"),
+                Block("stone_bricks"),
+                Block("coal_ore"),
+                Block("iron_ore"),
+                Block("gold_ore"),
+                Block("diamond_ore"),
                 Block("oak_planks"),
-                Block("oak_log"),
-                Block("oak_log", {"horiz": "T"})
+                Block("oak_log"), # Horizontal = false
+                Block("oak_log", {"horiz": "T"}), # Horizontal = true
+                Block("oak_stairs", {"orientation": "ur"}), # Upper right
+                Block("oak_stairs", {"orientation": "ul"}), # Upper left
+                Block("oak_stairs", {"orientation": "dl"}), # Down left
+                Block("oak_stairs", {"orientation": "dr"}), # Down right
+                Block("oak_slab", {"orientation": "u"}), # Upper
+                Block("oak_slab", {"orientation": "d"}), # Down
         ]
         self.selected_block = 0
 
@@ -125,60 +186,61 @@ class Player:
         # if event.type == pygame.KEYDOWN:
         if keys[pygame.K_a]:
             # Move left
-            if tick % 3 != 0:
+            if tick % 2 != 0:
                 return
             if self.pos[0] > 0 and world[self.pos[1]][self.pos[0] - 1].name == "air":
                 self.pos[0] -= 1
         if keys[pygame.K_d]:
             # Move right
-            if tick % 3 != 0:
+            if tick % 2 != 0:
                 return
             if self.pos[0] < len(world[0]) - 1 and world[self.pos[1]][self.pos[0] + 1].name == "air":
                 self.pos[0] += 1
         if keys[pygame.K_w]:
             # Move up
-            if tick % 3 != 0:
+            if tick % 2 != 0:
                 return
             if self.pos[1] > 0 and world[self.pos[1] - 1][self.pos[0]].name == "air":
                 self.pos[1] -= 1
         if keys[pygame.K_s]:
             # Move down
-            if tick % 3 != 0:
+            if tick % 2 != 0:
                 return
             if self.pos[1] < len(world) - 1 and world[self.pos[1] + 1][self.pos[0]].name == "air":
                 self.pos[1] += 1
 
         if keys[pygame.K_LEFT]:
             # Move left in the block selector
+            if tick % 2 != 0:
+                return
             if self.blockselector[0] == -1:
                 return
             self.blockselector[0] -= 1
         if keys[pygame.K_RIGHT]:
             # Move right in the block selector
+            if tick % 2 != 0:
+                return
             if self.blockselector[0] == 1:
                 return
             self.blockselector[0] += 1
         if keys[pygame.K_UP]:
             # Move up in the block selector
+            if tick % 2 != 0:
+                return
             if self.blockselector[1] == -1:
                 return
             self.blockselector[1] -= 1
         if keys[pygame.K_DOWN]:
             # Move down in the block selector
+            if tick % 2 != 0:
+                return
             if self.blockselector[1] == 1:
                 return
             self.blockselector[1] += 1
-        # if keys[pygame.K_k]:
-        #     self.selected_block -= 1
-        #     self.selected_block %= len(self.placeable_blocks)
-        # if keys[pygame.K_l]:
-        #     self.selected_block += 1
-        #     self.selected_block %= len(self.placeable_blocks)
         if keys[pygame.K_SPACE]:
             # Place a block
             added_up = [self.pos[1] + self.blockselector[1], self.pos[0] + self.blockselector[0]]
             if added_up[0] >= 0 and added_up[1] >= 0 and added_up[0] < len(world) and added_up[1] < len(world[0]):
-                # world[added_up[0]][added_up[1]] = Block(self.placeable_blocks[self.selected_block])
                 world[added_up[0]][added_up[1]] = self.placeable_blocks[self.selected_block]
         if keys[pygame.K_c]:
             # Remove a block

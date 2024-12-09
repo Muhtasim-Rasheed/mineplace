@@ -1,6 +1,9 @@
 import pygame
 import utils
 
+def play_click_sound():
+    utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
+
 class SaveScreen():
     def __init__(self, screen):
         self.screen = screen
@@ -20,6 +23,7 @@ class SaveScreen():
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
+                        play_click_sound()
                         return self.save_input.text
                 self.save_input.update(event, tick)
 

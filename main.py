@@ -7,6 +7,7 @@ ensureappdir.ensureappdir()
 import pygame
 import sys, os
 import time
+import json
 
 import utils
 
@@ -16,6 +17,7 @@ import savescr
 import worldsscr
 import creditsscr
 import keybindsscr
+import settingsscr
 
 import renderer
 
@@ -29,12 +31,35 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
     pygame.display.set_caption("Mineplace")
+
+    utils.SoundManager.checkmixer_online()
+    settings_file = ""
+    if os.name == "nt":
+        settings_file = os.getenv("APPDATA")
+    else:
+        settings_file = os.path.expanduser("~")
+    settings_file = os.path.join(settings_file, "mineplace", "settings.json")
+    if not os.path.exists(settings_file):
+        os.makedirs(os.path.dirname(settings_file), exist_ok=True)
+        with open(settings_file, "w") as f:
+            f.write(json.dumps({
+                "volume": 100,
+                "panorama_blur": 8
+            }))
+    else:
+        with open(settings_file) as f:
+            settings = json.loads(f.read())
+            utils.SettingsManager.apply_settings(settings)
     
     titlescreen = titlescr.TitleScreen(screen)
     option = titlescreen.run()
 
     if option == "exit":
         sys.exit()
+    if option == "settings":
+        settingsscreen = settingsscr.SettingsScreen(screen)
+        settingsscreen.run()
+        main()
     if option == "credits":
         creditsscreen = creditsscr.CreditsScreen(screen)
         creditsscreen.run()
@@ -50,10 +75,17 @@ def main():
             main()
         data = utils.WorldManager.load_world(worldname)
         world = data["world"]
+        renderworld = []
+        for y in range(len(world)):
+            row = []
+            for x in range(len(world[y])):
+                row.append(world[y][x].copy())
+            renderworld.append(row)
         r = renderer.Renderer(screen, GAME_WIDTH // GAME_BLOCK_SCALE, GAME_HEIGHT // GAME_BLOCK_SCALE, GAME_BLOCK_SCALE)
         spawn = utils.Player.find_best_spawn(world)
         player = utils.Player(spawn[0], spawn[1])
         tick = 0
+        isNight = False
         running = True
         while running:
             for event in pygame.event.get():
@@ -72,18 +104,29 @@ def main():
                             os.makedirs(folder_to_save)
                         
                         date = time.strftime("%Y-%m-%d")
+                        _time = time.strftime("%H-%M-%S")
 
-                        pygame.image.save(screen, f"{folder_to_save}/screenshot_{date}_{tick}.png")
+                        pygame.image.save(screen, f"{folder_to_save}/screenshot_{date}_{_time}_{tick}.png")
 
                 player.keydown(world, event, tick)
 
             keys = pygame.key.get_pressed()    
             player.keypress(world, keys, tick)
             
-            r.render(world, player)
+            r.render(renderworld, player, isNight)
             pygame.display.flip()
 
             world = utils.update_world(world)
+            renderworld = []
+            for y in range(len(world)):
+                row = []
+                for x in range(len(world[y])):
+                    row.append(world[y][x].copy())
+                renderworld.append(row)
+
+            if tick % (60 * 60 * 10) == 0:
+                if tick != 0:
+                    isNight = not isNight
 
             tick += 1
 
@@ -99,25 +142,59 @@ def main():
             main()
         world = utils.WorldGenerator(turn_alphanumeric_to_int(seed), GAME_WIDTH // GAME_BLOCK_SCALE, GAME_HEIGHT // GAME_BLOCK_SCALE, scale=0.1)
         world = world.generate()
+        renderworld = []
+        for y in range(len(world)):
+            row = []
+            for x in range(len(world[y])):
+                row.append(world[y][x].copy())
+            renderworld.append(row)
         r = renderer.Renderer(screen, GAME_WIDTH // GAME_BLOCK_SCALE, GAME_HEIGHT // GAME_BLOCK_SCALE, GAME_BLOCK_SCALE)
         spawn = utils.Player.find_best_spawn(world)
         player = utils.Player(spawn[0], spawn[1])
         tick = 0
+        isNight = False
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_PRINTSCREEN:
+                        folder_to_save = ""
+                        if os.name == "nt":
+                            folder_to_save = os.getenv("APPDATA")
+                        else:
+                            folder_to_save = os.path.expanduser("~")
+                        folder_to_save = os.path.join(folder_to_save, "mineplace", "screenshots")
+
+                        if not os.path.exists(folder_to_save):
+                            os.makedirs(folder_to_save)
+                        
+                        date = time.strftime("%Y-%m-%d")
+                        _time = time.strftime("%H-%M-%S")
+
+                        pygame.image.save(screen, f"{folder_to_save}/screenshot_{date}_{_time}_{tick}.png")
+
                 
                 player.keydown(world, event, tick)
 
             keys = pygame.key.get_pressed()    
             player.keypress(world, keys, tick)
             
-            r.render(world, player)
+            r.render(renderworld, player, isNight)
             pygame.display.flip()
 
             world = utils.update_world(world)
+            renderworld = []
+            for y in range(len(world)):
+                row = []
+                for x in range(len(world[y])):
+                    row.append(world[y][x].copy())
+                renderworld.append(row)
+
+            if tick % ( 60 * 60 * 10 ) == 0:
+                if tick != 0:
+                    isNight = not isNight
 
             tick += 1
 
