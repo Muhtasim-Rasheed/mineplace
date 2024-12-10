@@ -15,7 +15,7 @@ class Renderer:
                 "dirt",
                 "stone", "cobblestone", "stone_bricks",
                 "coal_ore", "iron_ore", "gold_ore", "diamond_ore",
-                "oak_planks", "oak_log",
+                "oak_planks", "oak_log", "oak_leaves",
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
                 "missing"
                 ]
@@ -56,7 +56,7 @@ class Renderer:
 
     def calculate_block_neighbourcount(self, world, x, y):
         count = 0
-        ignorelist = ["air"]
+        ignorelist = ["air", "oak_leaves"]
         arr = []
         for dx in range(-1, 2):
             row = []

@@ -154,6 +154,13 @@ class WorldGenerator:
         # Flip it
         world = world[::-1]
 
+        # Wait! Let's add some trees!
+        for x in range(self.width):
+            for y in range(self.height):
+                if world[y][x].name == "grass" and random.random() < 0.1:
+                    structure = StructureManager.load_structure("oak_tree")
+                    world = StructureManager.place_structure(world, structure, x, y + 1)
+
         return world
 
 class Player:
@@ -179,6 +186,7 @@ class Player:
                 Block("oak_stairs", {"orientation": "dr"}), # Down right
                 Block("oak_slab", {"orientation": "u"}), # Upper
                 Block("oak_slab", {"orientation": "d"}), # Down
+                Block("oak_leaves"),
         ]
         self.selected_block = 0
 
@@ -265,6 +273,54 @@ class Player:
                     return x, y - 1
 
         return 0, 0
+
+class StructureManager:
+    @staticmethod
+    def load_structure(name):
+        with open(resource_path(f"assets/structures/{name}.json"), "r") as f:
+            data = json.load(f)
+
+        return data
+    
+    @staticmethod
+    def place_structure(world, structure_dict, x, y):
+        # {
+        # 	"keys": {
+		#       "s": "oak_log",
+        # 		"l": "oak_leaves",
+        # 		" ": "air"
+        # 	},
+	    #   "dim": [5, 7],
+        # 	"structure": [
+        # 		" lll ",
+        # 		" lll ",
+        # 		"lllll",
+	    #       "lllll",
+        # 	    "  s  ",
+		#       "  s  ",
+        # 		"  s  "
+	    #   ],
+	    #   "placepoint": [2, 6]
+        # }
+
+        keys = structure_dict["keys"]
+        dim = structure_dict["dim"]
+        structure = structure_dict["structure"]
+        placepoint = structure_dict["placepoint"]
+
+        x -= placepoint[0]
+        y -= placepoint[1]
+
+        for dx in range(dim[0]):
+            for dy in range(dim[1]):
+                if x + dx >= len(world[0]) or y + dy >= len(world):
+                    continue
+                if structure[dy][dx] in keys:
+                    if keys[structure[dy][dx]] == "air":
+                        continue
+                    world[y + dy][x + dx] = Block(keys[structure[dy][dx]])
+
+        return world
 
 class WorldManager:
     @staticmethod

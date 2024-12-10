@@ -1,0 +1,18 @@
+{
+	"keys": {
+		"s": "oak_log",
+		"l": "oak_leaves",
+		" ": "air"
+	},
+	"dim": [5, 7],
+	"structure": [
+		" lll ",
+		"lllll",
+		"lllll",
+		" lll ",
+		"  s  ",
+		"  s  ",
+		"  s  "
+	],
+	"placepoint": [2, 6]
+}
