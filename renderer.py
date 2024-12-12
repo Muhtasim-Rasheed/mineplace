@@ -15,6 +15,7 @@ class Renderer:
                 "dirt",
                 "stone", "cobblestone", "stone_bricks",
                 "coal_ore", "iron_ore", "gold_ore", "diamond_ore",
+                "coal_block", "iron_block", "gold_block", "diamond_block",
                 "oak_planks", "oak_log", "oak_leaves",
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
                 "missing"

@@ -2,6 +2,8 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
+Current version: v1.2.2
+
 ## Features
 
 - 64x32 block world

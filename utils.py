@@ -177,6 +177,10 @@ class Player:
                 Block("iron_ore"),
                 Block("gold_ore"),
                 Block("diamond_ore"),
+                Block("coal_block"),
+                Block("iron_block"),
+                Block("gold_block"),
+                Block("diamond_block"),
                 Block("oak_planks"),
                 Block("oak_log"), # Horizontal = false
                 Block("oak_log", {"horiz": "T"}), # Horizontal = true
