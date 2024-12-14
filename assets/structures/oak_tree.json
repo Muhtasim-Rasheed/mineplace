@@ -4,15 +4,14 @@
 		"l": "oak_leaves",
 		" ": "air"
 	},
-	"dim": [5, 7],
+	"dim": [5, 6],
 	"structure": [
 		" lll ",
 		" lll ",
-		"lllll",
-		"lllll",
-		"  s  ",
+		"llsll",
+		"llsll",
 		"  s  ",
 		"  s  "
 	],
-	"placepoint": [2, 6]
+	"placepoint": [2, 5]
 }

@@ -20,6 +20,7 @@ class Renderer:
                 "oak_planks", "oak_log", "oak_leaves",
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
                 "water", "water_surface", "water_flow",
+                "glass", "sand", "gravel",
                 "missing"
                 ]
         self.textures = {}

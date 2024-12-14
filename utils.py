@@ -113,7 +113,7 @@ class WorldGenerator:
             oremap.append(column)
 
         orethresholds = {
-            "diamond_ore": 0.66,
+            "diamond_ore": 0.7,
             "gold_ore": 0.6,
             "iron_ore": 0.5,
             "coal_ore": 0.3
@@ -185,13 +185,16 @@ class Player:
                 Block("oak_planks"),
                 Block("oak_log"), # Horizontal = false
                 Block("oak_log", {"horiz": "T"}), # Horizontal = true
+                Block("oak_leaves"),
                 Block("oak_stairs", {"orientation": "ur"}), # Upper right
                 Block("oak_stairs", {"orientation": "ul"}), # Upper left
                 Block("oak_stairs", {"orientation": "dl"}), # Down left
                 Block("oak_stairs", {"orientation": "dr"}), # Down right
                 Block("oak_slab", {"orientation": "u"}), # Upper
                 Block("oak_slab", {"orientation": "d"}), # Down
-                Block("oak_leaves"),
+                Block("glass"),
+                Block("sand"),
+                Block("gravel"),
                 Block("water")
         ]
         self.collision_ignore = ["air", "water"]
@@ -443,6 +446,12 @@ def update_world(world, tick):
                         new_world[y][x - 1] = Block("water")
                     if x + 1 < len(world[y]) and world[y][x + 1].name == "air":
                         new_world[y][x + 1] = Block("water")
+
+            # Sand and gravel falling logic
+            if world[y][x].name in ["sand", "gravel"] and tick % 10 == 0:
+                if y + 1 < len(world) and world[y + 1][x].name == "air":
+                    new_world[y + 1][x] = Block(world[y][x].name)
+                    new_world[y][x] = Block("air")
 
     # Return the updated world
     return new_world

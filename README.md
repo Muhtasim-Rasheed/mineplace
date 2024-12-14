@@ -2,7 +2,7 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
-Current version: v1.2.3
+Current version: v1.2.4
 
 ## Features
 
@@ -18,6 +18,9 @@ Current version: v1.2.3
     - Oak Planks
     - Oak Log
     - Leaves
+    - Glass
+    - Sand
+    - Gravel
     - Water
 - Player (stuck in creative mode, no gravity)
 - Simple lighting
