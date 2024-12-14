@@ -116,7 +116,7 @@ def main():
             r.render(renderworld, player, isNight)
             pygame.display.flip()
 
-            world = utils.update_world(world)
+            world = utils.update_world(world, tick)
             renderworld = []
             for y in range(len(world)):
                 row = []
@@ -184,7 +184,7 @@ def main():
             r.render(renderworld, player, isNight)
             pygame.display.flip()
 
-            world = utils.update_world(world)
+            world = utils.update_world(world, tick)
             renderworld = []
             for y in range(len(world)):
                 row = []

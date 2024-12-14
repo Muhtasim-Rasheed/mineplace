@@ -181,6 +181,7 @@ class Player:
                 Block("iron_block"),
                 Block("gold_block"),
                 Block("diamond_block"),
+                Block("bricks"),
                 Block("oak_planks"),
                 Block("oak_log"), # Horizontal = false
                 Block("oak_log", {"horiz": "T"}), # Horizontal = true
@@ -191,7 +192,9 @@ class Player:
                 Block("oak_slab", {"orientation": "u"}), # Upper
                 Block("oak_slab", {"orientation": "d"}), # Down
                 Block("oak_leaves"),
+                Block("water")
         ]
+        self.collision_ignore = ["air", "water"]
         self.selected_block = 0
 
     def keypress(self, world, keys, tick):
@@ -200,25 +203,25 @@ class Player:
             # Move left
             if tick % 2 != 0:
                 return
-            if self.pos[0] > 0 and world[self.pos[1]][self.pos[0] - 1].name == "air":
+            if self.pos[0] > 0 and world[self.pos[1]][self.pos[0] - 1].name in self.collision_ignore:
                 self.pos[0] -= 1
         if keys[pygame.K_d]:
             # Move right
             if tick % 2 != 0:
                 return
-            if self.pos[0] < len(world[0]) - 1 and world[self.pos[1]][self.pos[0] + 1].name == "air":
+            if self.pos[0] < len(world[0]) - 1 and world[self.pos[1]][self.pos[0] + 1].name in self.collision_ignore:
                 self.pos[0] += 1
         if keys[pygame.K_w]:
             # Move up
             if tick % 2 != 0:
                 return
-            if self.pos[1] > 0 and world[self.pos[1] - 1][self.pos[0]].name == "air":
+            if self.pos[1] > 0 and world[self.pos[1] - 1][self.pos[0]].name in self.collision_ignore:
                 self.pos[1] -= 1
         if keys[pygame.K_s]:
             # Move down
             if tick % 2 != 0:
                 return
-            if self.pos[1] < len(world) - 1 and world[self.pos[1] + 1][self.pos[0]].name == "air":
+            if self.pos[1] < len(world) - 1 and world[self.pos[1] + 1][self.pos[0]].name in self.collision_ignore:
                 self.pos[1] += 1
 
         if keys[pygame.K_LEFT]:
@@ -408,31 +411,38 @@ class WorldManager:
 
         os.remove(f"{folder_to_load}/{name}.json")
 
-def update_world(world):
-    # Update the world
-    # Step 1: Randomly make dirt blocks grass (if grass blocks are everywhere except above)
-    # for x in range(len(world)):
-    #     for y in range(len(world[x])):
-    #         if world[x][y].name == "dirt":
-    #             if y < len(world[x]) - 1 and world[x][y + 1].name == "grass" and random.random() < 0.1:
-    #                 # If there is a block above the dirt block, don't change it
-    #                 if y > 0 and world[x][y - 1].name != "air":
-    #                     continue
-    #                 world[x][y] = Block("grass")
+def update_world(world, tick):
+    # Make a copy of the world for updates, so changes don't affect current processing
+    new_world = [[block for block in row] for row in world]
+
     for y in range(len(world)):
         for x in range(len(world[y])):
+            # Dirt to grass conversion
             if world[y][x].name == "dirt":
                 for dy in range(-1, 2):
                     for dx in range(-1, 2):
-                        if y + dy < 0 or y + dy >= len(world) or x + dx < 0 or x + dx >= len(world[y]):
+                        ny, nx = y + dy, x + dx
+                        if ny < 0 or ny >= len(world) or nx < 0 or nx >= len(world[y]):
                             continue
                         if world[y - 1][x].name != "air":
                             continue
-                        if world[y + dy][x + dx].name == "grass" and random.random() < 0.1:
-                            world[y][x] = Block("grass")
-            if world[y][x].name == "grass":
-                if y - 1 >= 0:
-                    if world[y - 1][x].name != "air":
-                        world[y][x] = Block("dirt")
+                        if world[ny][nx].name == "grass" and random.random() < 0.1:
+                            new_world[y][x] = Block("grass")
 
-    return world
+            # Grass to dirt conversion
+            if world[y][x].name == "grass":
+                if y - 1 >= 0 and world[y - 1][x].name != "air":
+                    new_world[y][x] = Block("dirt")
+
+            # Water spreading logic (only on ticks divisible by 15)
+            if world[y][x].name == "water" and tick % 15 == 0:
+                if y + 1 < len(world) and world[y + 1][x].name in ["air", "water"]:
+                    new_world[y + 1][x] = Block("water")
+                else:
+                    if x - 1 >= 0 and world[y][x - 1].name == "air":
+                        new_world[y][x - 1] = Block("water")
+                    if x + 1 < len(world[y]) and world[y][x + 1].name == "air":
+                        new_world[y][x + 1] = Block("water")
+
+    # Return the updated world
+    return new_world

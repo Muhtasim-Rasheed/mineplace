@@ -16,8 +16,10 @@ class Renderer:
                 "stone", "cobblestone", "stone_bricks",
                 "coal_ore", "iron_ore", "gold_ore", "diamond_ore",
                 "coal_block", "iron_block", "gold_block", "diamond_block",
+                "bricks",
                 "oak_planks", "oak_log", "oak_leaves",
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
+                "water", "water_surface", "water_flow",
                 "missing"
                 ]
         self.textures = {}
@@ -57,7 +59,7 @@ class Renderer:
 
     def calculate_block_neighbourcount(self, world, x, y):
         count = 0
-        ignorelist = ["air", "oak_leaves"]
+        ignorelist = ["air", "oak_leaves", "water", "water_surface", "water_flow"]
         arr = []
         for dx in range(-1, 2):
             row = []
@@ -76,7 +78,9 @@ class Renderer:
             arr.append(row)
         return count, arr
 
-    def add_shadow(self, surface, neighbourcount, neighbors):
+    def add_shadow(self, surface, neighbourcount, neighbors, blockname=None):
+        if blockname == "water":
+            return
         shadow = pygame.Surface(surface.get_size())
         shadow.fill((0, 0, 0))
         shadow.set_alpha(neighbourcount * (255 // 8))
@@ -93,6 +97,7 @@ class Renderer:
                     continue
                 if y == 2 and x == 2:
                     continue
+                shadow.fill((0, 0, 0))
                 shadow.set_alpha(neighbourcount * (255 // 12))
         surface.blit(shadow, (0, 0))
 
@@ -116,6 +121,27 @@ class Renderer:
                     texture_to_use = "oak_stairs_" + block.getattr("orientation")
                 elif block.name == "oak_slab":
                     texture_to_use = "oak_slab_" + block.getattr("orientation")
+                if block.name == "water":
+                    # Default texture is "water"
+                    texture_to_use = "water"
+
+                    # Check if there's no water above: use "water_surface"
+                    if y - 1 >= 0 and world[y - 1][x].name != "water":
+                        texture_to_use = "water_surface"
+
+                    # Check for water flow: water to the left or right
+                    if (x - 1 >= 0 and world[y][x - 1].name == "water") or \
+                       (x + 1 < self.game_width and world[y][x + 1].name == "water"):
+                        texture_to_use = "water_flow"
+
+                    # Reset to "water" if there's water above (priority over water_flow)
+                    if y - 1 >= 0 and world[y - 1][x].name == "water":
+                        texture_to_use = "water"
+
+                    # Special case: if water is on both sides, revert to "water"
+                    if x - 1 >= 0 and x + 1 < self.game_width and \
+                       world[y][x - 1].name == "water" and world[y][x + 1].name == "water":
+                        texture_to_use = "water"
                 else:
                     texture_to_use = block.name
 
@@ -151,7 +177,16 @@ class Renderer:
                 # Add shadow
                 if not self.skip_shadow:
                     neighbourcount, neighbors = self.calculate_block_neighbourcount(world, x, y)
-                    self.add_shadow(texture, neighbourcount, neighbors)
+                    self.add_shadow(texture, neighbourcount, neighbors, block.name)
+
+                # If the current block is water, make it a bit transparent
+                if block.name == "water":
+                    texture.set_alpha(150)
+
+                # If the texture to use is water_flow, and if there is a water block to the right instead of the left, flip it
+                if texture_to_use == "water_flow":
+                    if x - 1 >= 0 and world[y][x - 1].name == "water":
+                        texture = pygame.transform.flip(texture, True, False)
 
                 # Flip the texture
                 if block.name in self.flippable_blocks:

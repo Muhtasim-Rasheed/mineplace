@@ -2,7 +2,7 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
-Current version: v1.2.2
+Current version: v1.2.3
 
 ## Features
 
@@ -14,6 +14,7 @@ Current version: v1.2.2
     - Cobblestone
     - Stone Bricks
     - Ores (Coal, Iron, Gold, Diamond)
+    - Block form of ores (Coal Block, Iron Block, Gold Block, Diamond Block)
     - Oak Planks
     - Oak Log
 - Player (stuck in creative mode, no gravity)
