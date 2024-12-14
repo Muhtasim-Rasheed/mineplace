@@ -1,5 +1,5 @@
 REM PyInstaller build script (name: mineplace)
-pyinstaller --onefile --add-data "assets;assets" main.py --name mineplace.exe --noconsole REM For Windows
+python -m pyinstaller --onefile --add-data "assets;assets" main.py --name mineplace.exe --noconsole REM For Windows
 
 REM Remove useless files
 REM rm -rf build mineplace.exe.spec
