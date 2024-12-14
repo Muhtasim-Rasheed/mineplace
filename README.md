@@ -41,6 +41,8 @@ Current version: v1.2.4
 
 ## Credits
 
+Texture pack I'm using to not to get copyrighted by mojang: [P4ncake's Allure pack](https://modrinth.com/resourcepack/allure-pack)
+
 - [Python](https://www.python.org/)
 - [Pygame](https://www.pygame.org/)
 - [Me!1!!](https://youtube.com/@MutasimosDoesProgramming)
