@@ -17,6 +17,8 @@ Current version: v1.2.3
     - Block form of ores (Coal Block, Iron Block, Gold Block, Diamond Block)
     - Oak Planks
     - Oak Log
+    - Leaves
+    - Water
 - Player (stuck in creative mode, no gravity)
 - Simple lighting
 - Day / Night (12 ingame hours = 10 IRL minutes)
