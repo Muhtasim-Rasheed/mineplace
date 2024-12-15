@@ -202,6 +202,37 @@ class WorldGenerator:
 
         return world
 
+class FlatWorldGenerator:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def generate(self):
+        grass_height = self.height - self.height // 3
+
+        world = []
+        for x in range(self.width):
+            column = []
+            for y in range(self.height):
+                if y > grass_height + 3:
+                    column.append(Block("stone"))
+                    continue
+                if y == grass_height:
+                    column.append(Block("grass"))
+                elif y > grass_height:
+                    column.append(Block("dirt"))
+                else:
+                    column.append(Block("air"))
+            world.append(column)
+        
+        # Transpose it
+        world = list(map(list, zip(*world)))
+
+        # Flip it
+        # world = world[::-1]
+
+        return world
+
 class Player:
     def __init__(self, x, y):
         self.pos = [x, y]

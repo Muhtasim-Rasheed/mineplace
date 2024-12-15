@@ -118,7 +118,10 @@ class Renderer:
                 if block.name not in self.textures and block.name not in special_naming_cases:
                     print(f"Block {block.name} not found in textures")
                     texture_to_use = "missing"
-                elif block.name == "oak_stairs":
+                else:
+                    texture_to_use = block.name
+                
+                if block.name == "oak_stairs":
                     texture_to_use = "oak_stairs_" + block.getattr("orientation")
                 elif block.name == "oak_slab":
                     texture_to_use = "oak_slab_" + block.getattr("orientation")
@@ -143,9 +146,6 @@ class Renderer:
                     if x - 1 >= 0 and x + 1 < self.game_width and \
                        world[y][x - 1].name != "air" and world[y][x + 1].name != "air":
                         texture_to_use = "water"
-                else:
-                    texture_to_use = block.name
-
                 if isinstance(self.textures[texture_to_use], dict):
                     # If the block has multiple layers, render them in order
                     for texture_name in self.textures[texture_to_use]:

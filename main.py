@@ -142,6 +142,9 @@ def main():
             main()
         world = utils.WorldGenerator(turn_alphanumeric_to_int(seed), GAME_WIDTH // GAME_BLOCK_SCALE, GAME_HEIGHT // GAME_BLOCK_SCALE, scale=0.1)
         world = world.generate()
+        if seed == "flat":
+            world = utils.FlatWorldGenerator(GAME_WIDTH // GAME_BLOCK_SCALE, GAME_HEIGHT // GAME_BLOCK_SCALE)
+            world = world.generate()
         renderworld = []
         for y in range(len(world)):
             row = []
