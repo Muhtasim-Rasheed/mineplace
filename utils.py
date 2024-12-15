@@ -89,6 +89,7 @@ class WorldGenerator:
     def __init__(self, seed, width, height, scale=0.1):
         self.seed = seed
         self.noise = opensimplex.OpenSimplex(seed)
+        self.secondary_noise = opensimplex.OpenSimplex(seed + 1)
         self.width = width
         self.height = height
         self.scale = scale  # Added scale factor
@@ -119,6 +120,16 @@ class WorldGenerator:
             "coal_ore": 0.3
         }
 
+        gravelmap = []
+        for x in range(self.width):
+            column = []
+            for y in range(self.height):
+                noise_value = self.secondary_noise.noise2(x * self.scale, y * self.scale)
+                # Do NOT allow negatives, so map them from [-1, 1] to [0, 1]
+                noise_value = (noise_value + 1) / 2
+                column.append(noise_value)
+            gravelmap.append(column)
+
         world = []
         for x in range(self.width):
             column = []
@@ -134,14 +145,25 @@ class WorldGenerator:
                 elif y > terrain_height - 3 and y < terrain_height and not is_cave:
                     column.append(Block("dirt"))
                 elif y < terrain_height and not is_cave:
+                    should_add_stone = True
                     # WAIT! What if we can add some ores here?
                     for ore, threshold in orethresholds.items():
                         if oremap[x][y] > threshold:
                             # BUT! The higher we are, the lower chance of spawning ores
                             if random.random() < 0.3 - (y / self.height):
                                 column.append(Block(ore))
+                                # Don't add a stone now
+                                # continue
+                                should_add_stone = False
                             break
-                    column.append(Block("stone"))
+                    # WAIT (again)! What if we can add some gravel here?
+                    if gravelmap[x][y] > 0.7:
+                        column.append(Block("gravel", { "static": "T" })) # It doesn't fall
+                        # Don't add a stone now
+                        # continue
+                        should_add_stone = False
+                    if should_add_stone:
+                        column.append(Block("stone"))
                 elif is_cave and y < terrain_height:
                     column.append(Block("air"))
                 else:
@@ -450,8 +472,11 @@ def update_world(world, tick):
             # Sand and gravel falling logic
             if world[y][x].name in ["sand", "gravel"] and tick % 10 == 0:
                 if y + 1 < len(world) and world[y + 1][x].name == "air":
-                    new_world[y + 1][x] = Block(world[y][x].name)
-                    new_world[y][x] = Block("air")
+                    # Check if the block is NOT static
+                    if world[y][x].getattr("static") != "T":
+                        # If it is, move the block down
+                        new_world[y + 1][x] = Block(world[y][x].name)
+                        new_world[y][x] = Block("air")
 
     # Return the updated world
     return new_world
