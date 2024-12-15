@@ -28,7 +28,7 @@ class Keybinds:
         #         self.settings_file_contents = json.loads(f.read())
         #         for setting in self.settings_file_contents:
         #             self.settings[setting] = self.settings_file_contents[setting]
-        self.move_up = pygame.K_w
+        self.move_up = pygame.K_q
         self.move_down = pygame.K_s
         self.move_left = pygame.K_a
         self.move_right = pygame.K_d
@@ -46,6 +46,12 @@ class Keybinds:
         self.menu_left = pygame.K_LEFT
         self.menu_right = pygame.K_RIGHT
         self.delete_world = pygame.K_d
+        self.key_return = pygame.K_RETURN
+        self.prt_sc = pygame.K_PRINTSCREEN
+        self.backspace = pygame.K_BACKSPACE
+
+
+KEYBINDS = Keybinds()
 
 
 class KeybindsScreen:
@@ -76,7 +82,7 @@ class KeybindsScreen:
             pygame.display.flip()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     play_click_sound()

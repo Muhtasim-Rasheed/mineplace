@@ -1,6 +1,7 @@
 import pygame
 import random
 import utils
+from keybindsscr import KEYBINDS
 
 def play_click_sound():
     utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
@@ -23,10 +24,10 @@ class SeedScreen():
             self.flat_text.draw(self.screen, 200, 300)
             pygame.display.flip()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
+                    if event.key == KEYBINDS.key_return:
                         play_click_sound()
                         if self.seed_input.text == "":
                             return str(random.randint(0, 9999999999999999))
@@ -47,9 +48,9 @@ class TextInput():
     def update(self, event, tick):
         show_underscore = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
+            if event.key == KEYBINDS.backspace:
                 self.text = self.text[:-1]
-            elif event.key == pygame.K_RETURN:
+            elif event.key == KEYBINDS.backspace:
                 return self.text
             elif len(self.text) < self.allowed_chars:
                 self.text += event.unicode

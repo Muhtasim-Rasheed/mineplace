@@ -23,7 +23,7 @@ import renderer
 
 GAME_BLOCK_SCALE = 24
 GAME_WIDTH, GAME_HEIGHT = GAME_BLOCK_SCALE * 64, GAME_BLOCK_SCALE * 32
-KEYBINDS = keybindsscr.Keybinds
+KEYBINDS = keybindsscr.KEYBINDS
 
 def turn_alphanumeric_to_int(string):
     return sum(ord(char) for char in string)
@@ -90,10 +90,10 @@ def main():
         running = True
         while running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_PRINTSCREEN:
+                    if event.key == KEYBINDS.prt_sc:
                         folder_to_save = ""
                         if os.name == "nt":
                             folder_to_save = os.getenv("APPDATA")
@@ -160,10 +160,10 @@ def main():
         running = True
         while running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_PRINTSCREEN:
+                    if event.key == KEYBINDS.prt_sc:
                         folder_to_save = ""
                         if os.name == "nt":
                             folder_to_save = os.getenv("APPDATA")

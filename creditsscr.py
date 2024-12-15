@@ -1,5 +1,7 @@
 import utils
 import pygame
+from keybindsscr import KEYBINDS
+
 
 def play_click_sound():
     utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
@@ -32,7 +34,7 @@ class CreditsScreen:
             pygame.display.flip()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     play_click_sound()
