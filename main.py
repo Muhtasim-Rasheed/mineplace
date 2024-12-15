@@ -23,6 +23,7 @@ import renderer
 
 GAME_BLOCK_SCALE = 24
 GAME_WIDTH, GAME_HEIGHT = GAME_BLOCK_SCALE * 64, GAME_BLOCK_SCALE * 32
+KEYBINDS = keybindsscr.Keybinds
 
 def turn_alphanumeric_to_int(string):
     return sum(ord(char) for char in string)
