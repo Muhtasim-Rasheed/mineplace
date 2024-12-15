@@ -139,9 +139,9 @@ class Renderer:
                     if y - 1 >= 0 and world[y - 1][x].name == "water":
                         texture_to_use = "water"
 
-                    # Special case: if water is on both sides, revert to "water"
+                    # Special case: if a block is on both sides, revert to "water"
                     if x - 1 >= 0 and x + 1 < self.game_width and \
-                       world[y][x - 1].name == "water" and world[y][x + 1].name == "water":
+                       world[y][x - 1].name != "air" and world[y][x + 1].name != "air":
                         texture_to_use = "water"
                 else:
                     texture_to_use = block.name

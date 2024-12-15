@@ -103,6 +103,8 @@ class WorldGenerator:
             noise_value -= 2
             heightmap.append(noise_value)
 
+        waterlevel = self.height // 3
+
         oremap = []
         for x in range(self.width):
             column = []
@@ -141,7 +143,12 @@ class WorldGenerator:
                 is_cave = cave_noise > 0.5  # Adjust threshold for cave density
                 
                 if y == terrain_height and not is_cave:
-                    column.append(Block("grass"))
+                    should_add_grass = True
+                    if y < waterlevel:
+                        column.append(Block("sand"))
+                        should_add_grass = False
+                    if should_add_grass:
+                        column.append(Block("grass"))
                 elif y > terrain_height - 3 and y < terrain_height and not is_cave:
                     column.append(Block("dirt"))
                 elif y < terrain_height and not is_cave:
@@ -165,9 +172,19 @@ class WorldGenerator:
                     if should_add_stone:
                         column.append(Block("stone"))
                 elif is_cave and y < terrain_height:
-                    column.append(Block("air"))
+                    should_add_air = True
+                    if y < waterlevel:
+                        column.append(Block("water"))
+                        should_add_air = False
+                    if should_add_air:
+                        column.append(Block("air"))
                 else:
-                    column.append(Block("air"))
+                    should_add_air = True
+                    if y < waterlevel:
+                        column.append(Block("water"))
+                        should_add_air = False
+                    if should_add_air:
+                        column.append(Block("air"))
             world.append(column)
 
         # Transpose it
