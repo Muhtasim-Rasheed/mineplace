@@ -2,6 +2,8 @@ import pygame
 import utils
 import os
 from PIL import Image, ImageFilter
+from keybindsscr import KEYBINDS
+
 
 def play_click_sound():
     utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
@@ -72,11 +74,11 @@ class TitleScreen:
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     play_click_sound()
-                    if event.key == pygame.K_UP:
+                    if event.key == KEYBINDS.menu_up:
                         self.current -= 1
-                    if event.key == pygame.K_DOWN:
+                    if event.key == KEYBINDS.menu_down:
                         self.current += 1
-                    if event.key == pygame.K_RETURN:
+                    if event.key == KEYBINDS.key_return:
                         return self.options[self.current % len(self.options)]
 
             self.current %= len(self.options)

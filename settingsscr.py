@@ -2,6 +2,8 @@ import utils
 import pygame
 import json
 import os
+from keybindsscr import KEYBINDS
+
 
 def play_click_sound():
     utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
@@ -55,27 +57,27 @@ class SettingsScreen:
 
             pygame.display.flip()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     with open(self.settings_file, "w") as f:
                         f.write(json.dumps(self.settings))
                     return
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == KEYBINDS.menu_left:
                         play_click_sound()
                         if self.selected == 0:
                             self.settings["volume"] = max(0, self.settings["volume"] - 5)
                         elif self.selected == 1:
                             self.settings["panorama_blur"] = max(0, self.settings["panorama_blur"] - 1)
-                    if event.key == pygame.K_RIGHT:
+                    if event.key == KEYBINDS.menu_right:
                         play_click_sound()
                         if self.selected == 0:
                             self.settings["volume"] = min(100, self.settings["volume"] + 5)
                         elif self.selected == 1:
                             self.settings["panorama_blur"] = min(100, self.settings["panorama_blur"] + 1)
-                    if event.key == pygame.K_UP:
+                    if event.key == KEYBINDS.menu_up:
                         play_click_sound()
                         self.selected = (self.selected - 1) % len(self.settings)
-                    if event.key == pygame.K_DOWN:
+                    if event.key == KEYBINDS.menu_down:
                         play_click_sound()
                         self.selected = (self.selected + 1) % len(self.settings)
 

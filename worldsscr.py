@@ -1,5 +1,6 @@
 import utils
 import pygame
+from keybindsscr import KEYBINDS
 
 def play_click_sound():
     utils.SoundManager.playsound(utils.resource_path("assets/sounds/click.ogg"))
@@ -40,23 +41,23 @@ class WorldsScreen:
             pygame.display.flip()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     play_click_sound()
-                    if event.key == pygame.K_UP:
+                    if event.key == KEYBINDS.menu_up:
                         self.current = max(0, self.current - 1)  # Prevent going below 0
-                    if event.key == pygame.K_DOWN:
+                    if event.key == KEYBINDS.menu_down:
                         self.current = min(len(self.worlds) - 1, self.current + 1)  # Prevent overflow
-                    if event.key == pygame.K_LEFT:
+                    if event.key == KEYBINDS.menu_left:
                         self.current = max(0, self.current - self.options_per_page)  # Move to previous page
-                    if event.key == pygame.K_RIGHT:
+                    if event.key == KEYBINDS.menu_right:
                         self.current = min(len(self.worlds) - 1, self.current + self.options_per_page)  # Move to next page
-                    if event.key == pygame.K_d:
+                    if event.key == KEYBINDS.delete_world:
                         utils.WorldManager.delete_world(self.worlds[self.current])
                         self.current = max(0, self.current - 1)  # Move to previous world
                         self.worlds = utils.WorldManager.all_world_files()
-                    if event.key == pygame.K_RETURN:
+                    if event.key == KEYBINDS.key_return:
                         return self.worlds[self.current]
 
 

@@ -4,6 +4,7 @@ import pygame
 import json
 import sys, os
 from PIL import Image, ImageFilter
+from keybindsscr import KEYBINDS
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and PyInstaller """
@@ -272,65 +273,65 @@ class Player:
 
     def keypress(self, world, keys, tick):
         # if event.type == pygame.KEYDOWN:
-        if keys[pygame.K_a]:
+        if keys[KEYBINDS.move_left]:
             # Move left
             if tick % 2 != 0:
                 return
             if self.pos[0] > 0 and world[self.pos[1]][self.pos[0] - 1].name in self.collision_ignore:
                 self.pos[0] -= 1
-        if keys[pygame.K_d]:
+        if keys[KEYBINDS.move_right]:
             # Move right
             if tick % 2 != 0:
                 return
             if self.pos[0] < len(world[0]) - 1 and world[self.pos[1]][self.pos[0] + 1].name in self.collision_ignore:
                 self.pos[0] += 1
-        if keys[pygame.K_w]:
+        if keys[KEYBINDS.move_up]:
             # Move up
             if tick % 2 != 0:
                 return
             if self.pos[1] > 0 and world[self.pos[1] - 1][self.pos[0]].name in self.collision_ignore:
                 self.pos[1] -= 1
-        if keys[pygame.K_s]:
+        if keys[KEYBINDS.move_down]:
             # Move down
             if tick % 2 != 0:
                 return
             if self.pos[1] < len(world) - 1 and world[self.pos[1] + 1][self.pos[0]].name in self.collision_ignore:
                 self.pos[1] += 1
 
-        if keys[pygame.K_LEFT]:
+        if keys[KEYBINDS.move_blockselector_left]:
             # Move left in the block selector
             if tick % 2 != 0:
                 return
             if self.blockselector[0] == -1:
                 return
             self.blockselector[0] -= 1
-        if keys[pygame.K_RIGHT]:
+        if keys[KEYBINDS.move_blockselector_right]:
             # Move right in the block selector
             if tick % 2 != 0:
                 return
             if self.blockselector[0] == 1:
                 return
             self.blockselector[0] += 1
-        if keys[pygame.K_UP]:
+        if keys[KEYBINDS.move_blockselector_up]:
             # Move up in the block selector
             if tick % 2 != 0:
                 return
             if self.blockselector[1] == -1:
                 return
             self.blockselector[1] -= 1
-        if keys[pygame.K_DOWN]:
+        if keys[KEYBINDS.move_blockselector_down]:
             # Move down in the block selector
             if tick % 2 != 0:
                 return
             if self.blockselector[1] == 1:
                 return
             self.blockselector[1] += 1
-        if keys[pygame.K_SPACE]:
+        if keys[KEYBINDS.place_block]:
             # Place a block
             added_up = [self.pos[1] + self.blockselector[1], self.pos[0] + self.blockselector[0]]
             if added_up[0] >= 0 and added_up[1] >= 0 and added_up[0] < len(world) and added_up[1] < len(world[0]):
                 world[added_up[0]][added_up[1]] = self.placeable_blocks[self.selected_block]
-        if keys[pygame.K_c]:
+        if keys[KEYBINDS.break_block]:
             # Remove a block
             added_up = [self.pos[1] + self.blockselector[1], self.pos[0] + self.blockselector[0]]
             if added_up[0] >= 0 and added_up[1] >= 0 and added_up[0] < len(world) and added_up[1] < len(world[0]):
@@ -338,10 +339,10 @@ class Player:
 
     def keydown(self, world, event, tick):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_k:
+            if event.key == KEYBINDS.switch_block_left:
                 self.selected_block -= 1
                 self.selected_block %= len(self.placeable_blocks)
-            if event.key == pygame.K_l:
+            if event.key == KEYBINDS.switch_block_right:
                 self.selected_block += 1
                 self.selected_block %= len(self.placeable_blocks)
 
