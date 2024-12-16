@@ -12,6 +12,7 @@ class CreditsScreen:
         self.credits = [
             "Game Dev - YT/@MutasimosDoesProgramming",
             "Texture artist - Modrinth/user/P4ncake",
+            "Windows port builder - Discord @bill_cipher345",
             "Python - python.org",
             "Pygame - pygame.org",
             "And you for playing!"

@@ -2,7 +2,7 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
-Current version: v1.2.7
+Current version: v1.2.8
 
 ## Features
 
