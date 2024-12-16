@@ -48,7 +48,7 @@ Texture pack I'm using to not to get copyrighted by mojang: [P4ncake's Allure pa
 - [Me!1!!](https://youtube.com/@MutasimosDoesProgramming)
 - [Me!1!! (github)](https://github.com/Muhtasim-Rasheed)
 - [P4ncake!](https://modrinth.com/user/P4ncake)
-- bill\_cipher356 (triangle)
+- bill\_cipher356 ( triangle™ )
 - [You, for playing the game](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ## Building from source
