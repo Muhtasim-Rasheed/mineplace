@@ -55,7 +55,7 @@ class TitleScreen:
             titletext = Text("Mineplace", self.big_font, (255, 255, 0))
             titletext.draw(self.screen, 200, 200)
 
-            versiontext = Text("v1.2.9", self.font, (255, 255, 255))
+            versiontext = Text("v1.2.10", self.font, (255, 255, 255))
             versiontext.draw(self.screen, 200, 250)
             
             steve = pygame.transform.scale(self.steve["steve"], (self.steve["steve"].get_width() * 16, self.steve["steve"].get_height() * 16))

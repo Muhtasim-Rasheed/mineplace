@@ -110,7 +110,7 @@ class KeybindsScreen:
     def __init__(self, screen):
         # This new keybind screen lets the user change the keybinds
         self.screen = screen
-        self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 24)
+        self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 20)
         
         # Key translations (pygame key to string) (All keys on a keyboard)
         self.translations = {}
@@ -160,12 +160,15 @@ class KeybindsScreen:
                     actiontext = Text(f"{self.action_translations[action]}: {self.translations[getattr(KEYBINDS, action)]}", self.font, color)
                 else:
                     actiontext = Text(f"> {self.action_translations[action]}: {self.translations[getattr(KEYBINDS, action)]} <", self.font, color)
-                actiontext.draw(self.screen, 100, 75 + i * 30)
+                actiontext.draw(self.screen, 100, 75 + i * 25)
+            
+            howtochange_text = Text("Press select to change keybind", self.font, (255, 255, 255))
+            howtochange_text.draw(self.screen, 100, 75 + len(self.action_translations) * 25 + 25)
             
             pygame.display.flip()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == KEYBINDS.close_menus):
+                if event.type == pygame.QUIT:
                     return "exit"
                 if event.type == pygame.KEYDOWN:
                     # Wait! We're changing keybinds!
@@ -174,15 +177,17 @@ class KeybindsScreen:
                         setattr(KEYBINDS, self.options[self.current], event.key)
                         KEYBINDS.export_keybinds_to_file()
                         self.is_changing = False
-
-                    play_click_sound()
-                    if event.key == pygame.K_UP:
-                        self.current -= 1
-                    if event.key == pygame.K_DOWN:
-                        self.current += 1
-                    if event.key == pygame.K_RETURN:
-                        # return self.options[self.current % len(self.options)] # This is what we'd do if this was a normal menu, but nonono, we're changing keybinds
-                        self.is_changing = True
+                    else:
+                        play_click_sound()
+                        if event.key == KEYBINDS.close_menus:
+                            return "exit"
+                        if event.key == KEYBINDS.menu_up:
+                            self.current -= 1
+                        if event.key == KEYBINDS.menu_down:
+                            self.current += 1
+                        if event.key == KEYBINDS.key_return:
+                            # return self.options[self.current % len(self.options)] # This is what we'd do if this was a normal menu, but nonono, we're changing keybinds
+                            self.is_changing = True
 class Text:
     def __init__(self, text, font, color):
         self.text = text
