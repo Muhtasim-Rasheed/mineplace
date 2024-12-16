@@ -2,7 +2,7 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
-Current version: v1.2.8
+Current version: v1.2.9
 
 ## Features
 
@@ -27,7 +27,7 @@ Current version: v1.2.8
 - Day / Night (12 ingame hours = 10 IRL minutes)
 - World saving and loading
 
-## Controls
+## Controls (Default)
 
 - `WASD` to move
 - Arrow keys to move block selector
@@ -48,6 +48,7 @@ Texture pack I'm using to not to get copyrighted by mojang: [P4ncake's Allure pa
 - [Me!1!!](https://youtube.com/@MutasimosDoesProgramming)
 - [Me!1!! (github)](https://github.com/Muhtasim-Rasheed)
 - [P4ncake!](https://modrinth.com/user/P4ncake)
+- [kolpa01](https://github.com/kolpa01) (For changable keybinds)
 - bill\_cipher356 ( triangle™ )
 - [You, for playing the game](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
