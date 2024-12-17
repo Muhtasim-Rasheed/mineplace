@@ -1,5 +1,15 @@
 # Git ignore
+# Pyinstaller junk
 dist/
+build/
+*.spec
+*.pyc
+
+# Python junk
 __pycache__/
+
+# Texture pack
 ALLURE/
+
+# IntelliJ IDEA (kolpa01's)
 .idea/
