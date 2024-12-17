@@ -50,7 +50,7 @@ class TextInput():
         if event.type == pygame.KEYDOWN:
             if event.key == KEYBINDS.backspace:
                 self.text = self.text[:-1]
-            elif event.key == KEYBINDS.backspace:
+            elif event.key == KEYBINDS.key_return:
                 return self.text
             elif len(self.text) < self.allowed_chars:
                 self.text += event.unicode

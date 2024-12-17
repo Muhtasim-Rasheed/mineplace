@@ -266,7 +266,10 @@ class Player:
                 Block("glass"),
                 Block("sand"),
                 Block("gravel"),
-                Block("water")
+                Block("water"),
+                Block("redstone_dust", {"state": "off"}), # Unpowered
+                # Powered version isn't included as we have redstone_block
+                Block("redstone_block"),
         ]
         self.collision_ignore = ["air", "water"]
         self.selected_block = 0
@@ -526,6 +529,21 @@ def update_world(world, tick):
                         # If it is, move the block down
                         new_world[y + 1][x] = Block(world[y][x].name)
                         new_world[y][x] = Block("air")
+
+            # Redstone dust logic
+            # If the redstone dust is powered, it will power the blocks around it
+            # All redstone related blocks other than the redstone block have a state attribute
+            if world[y][x].name == "redstone_dust" and tick % 6 == 0:
+                # If a nereby block is a redstone block, power the redstone dust
+                # (or a powered redstone dust)
+                for dy in range(-1, 2):
+                    for dx in range(-1, 2):
+                        ny, nx = y + dy, x + dx
+                        if ny < 0 or ny >= len(world) or nx < 0 or nx >= len(world[y]):
+                            continue
+                        if world[ny][nx].name == "redstone_block" or world[ny][nx].getattr("state") == "on":
+                            new_world[y][x] = Block("redstone_dust", {"state": "on"})
+                            break
 
     # Return the updated world
     return new_world

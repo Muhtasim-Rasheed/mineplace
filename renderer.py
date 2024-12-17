@@ -21,6 +21,7 @@ class Renderer:
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
                 "water", "water_surface", "water_flow",
                 "glass", "sand", "gravel",
+                "redstone_dust_on", "redstone_dust_off", "redstone_block",
                 "missing"
                 ]
         self.textures = {}
@@ -102,9 +103,12 @@ class Renderer:
     #             shadow.set_alpha(neighbourcount * (255 // 12))
     #     surface.blit(shadow, (0, 0))
 
-    def add_shadow(self, surface, neighbourcount, neighbors, blockname=None):
-        if blockname == "water":
-            return
+    def add_shadow(self, surface, neighbourcount, neighbors, block=None):
+        if block != None:
+            if block.name == "water":
+                return
+            if block.getattr("state") == "on":
+                return
 
         # Create a shadow surface with transparency
         shadow = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
@@ -137,7 +141,7 @@ class Renderer:
 
         self.background.draw(isNight)
 
-        special_naming_cases = ["oak_stairs", "oak_slab"]
+        special_naming_cases = ["oak_stairs", "oak_slab", "redstone_dust", "water"]
 
         for y, column in enumerate(world):
             for x, block in enumerate(column):
@@ -155,7 +159,9 @@ class Renderer:
                     texture_to_use = "oak_stairs_" + block.getattr("orientation")
                 elif block.name == "oak_slab":
                     texture_to_use = "oak_slab_" + block.getattr("orientation")
-                if block.name == "water":
+                elif block.name == "redstone_dust":
+                    texture_to_use = "redstone_dust_" + block.getattr("state")
+                elif block.name == "water":
                     # Default texture is "water"
                     texture_to_use = "water"
 
@@ -208,7 +214,7 @@ class Renderer:
                 # Add shadow
                 if not self.skip_shadow:
                     neighbourcount, neighbors = self.calculate_block_neighbourcount(world, x, y)
-                    self.add_shadow(texture, neighbourcount, neighbors, block.name)
+                    self.add_shadow(texture, neighbourcount, neighbors, block)
 
                 # If the current block is water, make it a bit transparent
                 if block.name == "water":
@@ -248,6 +254,8 @@ class Renderer:
             texture_to_use = "oak_stairs_" + selected_block.getattr("orientation")
         elif selected_block.name == "oak_slab":
             texture_to_use = "oak_slab_" + selected_block.getattr("orientation")
+        elif selected_block.name == "redstone_dust":
+            texture_to_use = "redstone_dust_" + selected_block.getattr("state")
         else:
             texture_to_use = selected_block.name
 
