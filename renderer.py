@@ -79,27 +79,57 @@ class Renderer:
             arr.append(row)
         return count, arr
 
+    # def add_shadow(self, surface, neighbourcount, neighbors, blockname=None):
+    #     if blockname == "water":
+    #         return
+    #     shadow = pygame.Surface(surface.get_size())
+    #     shadow.fill((0, 0, 0))
+    #     shadow.set_alpha(neighbourcount * (255 // 8))
+    #     # If any of the adjacent blocks are air, not the diagonal ones, then instead make the alpha neighborcount * (255 // 12)
+    #     for y, row in enumerate(neighbors):
+    #         for x, block in enumerate(row):
+    #             if block:
+    #                 continue
+    #             if y == 0 and x == 0:
+    #                 continue
+    #             if y == 0 and x == 2:
+    #                 continue
+    #             if y == 2 and x == 0:
+    #                 continue
+    #             if y == 2 and x == 2:
+    #                 continue
+    #             shadow.fill((0, 0, 0))
+    #             shadow.set_alpha(neighbourcount * (255 // 12))
+    #     surface.blit(shadow, (0, 0))
+
     def add_shadow(self, surface, neighbourcount, neighbors, blockname=None):
         if blockname == "water":
             return
-        shadow = pygame.Surface(surface.get_size())
-        shadow.fill((0, 0, 0))
-        shadow.set_alpha(neighbourcount * (255 // 8))
-        # If any of the adjacent blocks are air, not the diagonal ones, then instead make the alpha neighborcount * (255 // 12)
+
+        # Create a shadow surface with transparency
+        shadow = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+        
+        # Fill the shadow surface with a base shadow alpha
+        base_alpha = neighbourcount * (255 // 8)
+        shadow.fill((0, 0, 0, base_alpha))
+
+        # Adjust alpha for adjacent air blocks (not diagonal ones)
         for y, row in enumerate(neighbors):
             for x, block in enumerate(row):
                 if block:
                     continue
-                if y == 0 and x == 0:
+                if (y, x) in [(0, 0), (0, 2), (2, 0), (2, 2)]:
                     continue
-                if y == 0 and x == 2:
-                    continue
-                if y == 2 and x == 0:
-                    continue
-                if y == 2 and x == 2:
-                    continue
-                shadow.fill((0, 0, 0))
-                shadow.set_alpha(neighbourcount * (255 // 12))
+                shadow.fill((0, 0, 0, neighbourcount * (255 // 12)))
+
+        # Create a mask from the transparency of the original surface
+        mask = pygame.mask.from_surface(surface)  # Generates a mask for non-transparent pixels
+        shadow_mask = mask.to_surface(setcolor=(0, 0, 0, 255), unsetcolor=(0, 0, 0, 0))
+
+        # Apply the mask to the shadow
+        shadow.blit(shadow_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+        # Blit the shadow onto the original surface
         surface.blit(shadow, (0, 0))
 
     def render(self, world, player, isNight=False):
