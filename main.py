@@ -178,6 +178,9 @@ def main():
                         _time = time.strftime("%H-%M-%S")
 
                         pygame.image.save(screen, f"{folder_to_save}/screenshot_{date}_{_time}_{tick}.png")
+                    if event.key == pygame.K_F3:
+                        added_up = [player.pos[0] + player.blockselector[0], player.pos[1] + player.blockselector[1]]
+                        print(f"Block: {world[added_up[1]][added_up[0]]}")
 
                 
                 player.keydown(world, event, tick)

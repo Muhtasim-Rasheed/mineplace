@@ -267,8 +267,10 @@ class Player:
                 Block("sand"),
                 Block("gravel"),
                 Block("water"),
-                Block("redstone_dust", {"state": "off"}), # Unpowered
-                # Powered version isn't included as we have redstone_block
+                Block("redstone_dust", {"state": "off", "power": "0"}), # Unpowered
+                Block("redstone_repeater", {"state": "off", "orientation": "l"}), # Unpowered left
+                Block("redstone_repeater", {"state": "off", "orientation": "r"}), # Unpowered right
+                Block("redstone_lamp", {"state": "off"}), # Unpowered
                 Block("redstone_block"),
         ]
         self.collision_ignore = ["air", "water"]
@@ -530,20 +532,93 @@ def update_world(world, tick):
                         new_world[y + 1][x] = Block(world[y][x].name)
                         new_world[y][x] = Block("air")
 
-            # Redstone dust logic
-            # If the redstone dust is powered, it will power the blocks around it
-            # All redstone related blocks other than the redstone block have a state attribute
-            if world[y][x].name == "redstone_dust" and tick % 6 == 0:
-                # If a nereby block is a redstone block, power the redstone dust
+            # Redstone dust power logic
+            if world[y][x].name == "redstone_dust" and tick % 2 == 0:
+                greatest_power = 0
+                # If a nearby block is a redstone block, power the redstone dust
                 # (or a powered redstone dust)
                 for dy in range(-1, 2):
                     for dx in range(-1, 2):
                         ny, nx = y + dy, x + dx
                         if ny < 0 or ny >= len(world) or nx < 0 or nx >= len(world[y]):
                             continue
-                        if world[ny][nx].name == "redstone_block" or world[ny][nx].getattr("state") == "on":
-                            new_world[y][x] = Block("redstone_dust", {"state": "on"})
-                            break
+                        if ny == y and nx == x:
+                            continue
+                        if world[ny][nx].name == "redstone_block":
+                            greatest_power = 16 # 15 + 1
+                        if world[ny][nx].name == "redstone_dust":
+                            if int(world[ny][nx].getattr("power")) > greatest_power:
+                                greatest_power = int(world[ny][nx].getattr("power"))
+                if greatest_power - 1 > 0:
+                    new_world[y][x] = Block("redstone_dust", {"state": "on", "power": str(greatest_power - 1)})
+                else:
+                    new_world[y][x] = Block("redstone_dust", {"state": "off", "power": "0"})
+            
+            # Redstone repeater power logic
+            if world[y][x].name == "redstone_repeater" and tick % 2 == 0:
+                # Detect the block behind the repeater (using orientation)
+                orientation = world[y][x].getattr("orientation")
+                behind = [0, 0]
+                if orientation == "l":
+                    behind = [x + 1, y]
+                if orientation == "r":
+                    behind = [x - 1, y]
+
+                # If the block behind the repeater is powered, power the repeater
+                should_power_up = False
+                if behind[0] >= 0 and behind[0] < len(world[y]) and behind[1] >= 0 and behind[1] < len(world):
+                    if world[behind[1]][behind[0]].name == "redstone_dust":
+                        if world[behind[1]][behind[0]].getattr("state") == "on":
+                            should_power_up = True
+                    if world[behind[1]][behind[0]].name == "redstone_repeater":
+                        if world[behind[1]][behind[0]].getattr("state") == "on":
+                            should_power_up = True
+                    if world[behind[1]][behind[0]].name == "redstone_block":
+                        should_power_up = True
+                
+                if should_power_up:
+                    new_world[y][x] = Block("redstone_repeater", {"state": "on", "orientation": world[y][x].getattr("orientation")})
+                else:
+                    new_world[y][x] = Block("redstone_repeater", {"state": "off", "orientation": world[y][x].getattr("orientation")})
+
+                # Now for the fun part: power the block in front of the repeater
+                front = [0, 0]
+                if orientation == "l":
+                    front = [x - 1, y]
+                if orientation == "r":
+                    front = [x + 1, y]
+
+                if front[0] >= 0 and front[0] < len(world[y]) and front[1] >= 0 and front[1] < len(world):
+                    if world[y][x].getattr("state") == "on":
+                        if world[front[1]][front[0]].name == "redstone_dust":
+                            new_world[front[1]][front[0]] = Block("redstone_dust", {"state": "on", "power": "15"})
+                        if world[front[1]][front[0]].name == "redstone_repeater":
+                            new_world[front[1]][front[0]] = Block("redstone_repeater", {"state": "on", "orientation": world[y][x].getattr("orientation")})
+                    else:
+                        if world[front[1]][front[0]].name == "redstone_dust":
+                            new_world[front[1]][front[0]] = Block("redstone_dust", {"state": "off", "power": "0"})
+                        if world[front[1]][front[0]].name == "redstone_repeater":
+                            new_world[front[1]][front[0]] = Block("redstone_repeater", {"state": "off", "orientation": world[y][x].getattr("orientation")})
+
+            # Redstone lamp power logic
+            if world[y][x].name == "redstone_lamp" and tick % 2 == 0:
+                should_power_up = False
+                for dy in range(-1, 2):
+                    for dx in range(-1, 2):
+                        ny, nx = y + dy, x + dx
+                        if ny < 0 or ny >= len(world) or nx < 0 or nx >= len(world[y]):
+                            continue
+                        if ny == y and nx == x:
+                            continue
+                        if world[ny][nx].name == "redstone_block":
+                            should_power_up = True
+                        if "redstone" in world[ny][nx].name:
+                            if world[ny][nx].getattr("state") == "on":
+                                should_power_up = True
+                if should_power_up:
+                    new_world[y][x] = Block("redstone_lamp", {"state": "on"})
+                else:
+                    new_world[y][x] = Block("redstone_lamp", {"state": "off"})
 
     # Return the updated world
     return new_world

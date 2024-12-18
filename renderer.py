@@ -11,6 +11,7 @@ class Renderer:
         self.game_height = game_height
         self.game_block_scale = game_block_scale
         self.font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 40)
+        self.small_font = pygame.font.Font(utils.resource_path("assets/fonts/W95FA.otf"), 20)
         self.texture_names = [
                 "dirt",
                 "stone", "cobblestone", "stone_bricks",
@@ -21,7 +22,8 @@ class Renderer:
                 "oak_stairs_ur", "oak_stairs_ul", "oak_stairs_dr", "oak_stairs_dl", "oak_slab_u", "oak_slab_d",
                 "water", "water_surface", "water_flow",
                 "glass", "sand", "gravel",
-                "redstone_dust_on", "redstone_dust_off", "redstone_block",
+                "redstone_dust_on", "redstone_dust_off", "redstone_block", "redstone_repeater_on", "redstone_repeater_off",
+                "redstone_lamp_on", "redstone_lamp_off",
                 "missing"
                 ]
         self.textures = {}
@@ -141,7 +143,7 @@ class Renderer:
 
         self.background.draw(isNight)
 
-        special_naming_cases = ["oak_stairs", "oak_slab", "redstone_dust", "water"]
+        special_naming_cases = ["oak_stairs", "oak_slab", "redstone_dust", "redstone_repeater", "redstone_lamp", "water"]
 
         for y, column in enumerate(world):
             for x, block in enumerate(column):
@@ -161,6 +163,10 @@ class Renderer:
                     texture_to_use = "oak_slab_" + block.getattr("orientation")
                 elif block.name == "redstone_dust":
                     texture_to_use = "redstone_dust_" + block.getattr("state")
+                elif block.name == "redstone_repeater":
+                    texture_to_use = "redstone_repeater_" + block.getattr("state")
+                elif block.name == "redstone_lamp":
+                    texture_to_use = "redstone_lamp_" + block.getattr("state")
                 elif block.name == "water":
                     # Default texture is "water"
                     texture_to_use = "water"
@@ -209,6 +215,15 @@ class Renderer:
                 if texture_to_use == "oak_log":
                     if block.getattr("horiz") == "T":
                         texture = pygame.transform.rotate(texture, 90)
+                if texture_to_use == "redstone_dust_on":
+                    # Redstone dust has a power attribute, which is from 0 - 15
+                    # Draw this as a number on the block
+                    power = block.getattr("power")
+                    text = self.small_font.render(str(power), True, (255, 255, 255))
+                    self.screen.blit(text, (x * self.game_block_scale, y * self.game_block_scale))
+                if block.name == "redstone_repeater":
+                    if block.getattr("orientation") == "r":
+                        texture = pygame.transform.flip(texture, True, False)
                 # Resize the texture to the game block scale
                 texture = pygame.transform.scale(texture, (self.game_block_scale, self.game_block_scale))
                 # Add shadow
@@ -256,6 +271,10 @@ class Renderer:
             texture_to_use = "oak_slab_" + selected_block.getattr("orientation")
         elif selected_block.name == "redstone_dust":
             texture_to_use = "redstone_dust_" + selected_block.getattr("state")
+        elif selected_block.name == "redstone_repeater":
+            texture_to_use = "redstone_repeater_" + selected_block.getattr("state")
+        elif selected_block.name == "redstone_lamp":
+            texture_to_use = "redstone_lamp_" + selected_block.getattr("state")
         else:
             texture_to_use = selected_block.name
 
@@ -268,6 +287,9 @@ class Renderer:
         if texture_to_use == "oak_log":
             if selected_block.getattr("horiz") == "T":
                 texture = pygame.transform.rotate(texture, 90)
+        if selected_block.name == "redstone_repeater":
+            if selected_block.getattr("orientation") == "r":
+                texture = pygame.transform.flip(texture, True, False)
         texture = pygame.transform.scale(texture, (self.game_block_scale, self.game_block_scale))
         texture.set_alpha(150)
         self.screen.blit(texture, (blockselector_x * self.game_block_scale, blockselector_y * self.game_block_scale))

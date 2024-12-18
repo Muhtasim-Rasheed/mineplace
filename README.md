@@ -2,7 +2,7 @@
 
 Mineplace is a simple Minecraft clone made with Python and Pygame.
 
-Current version: v1.3.1 Redstone Test
+Current version: v1.3.2 Redstone Test 2
 
 ## Features
 
@@ -23,6 +23,8 @@ Current version: v1.3.1 Redstone Test
     - Gravel
     - Water
     - Redstone Dust
+    - Redstone Repeater
+    - Redstone Lamp
     - Redstone Block
 - Player (stuck in creative mode, no gravity)
 - Simple lighting
