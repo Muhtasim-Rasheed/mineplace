@@ -23,7 +23,7 @@ class Renderer:
                 "water", "water_surface", "water_flow",
                 "glass", "sand", "gravel",
                 "redstone_dust_on", "redstone_dust_off", "redstone_block", "redstone_repeater_on", "redstone_repeater_off",
-                "redstone_lamp_on", "redstone_lamp_off",
+                "redstone_lamp_on", "redstone_lamp_off", "redstone_observer_u", "redstone_observer_d", "redstone_observer_l", "redstone_observer_r",
                 "missing"
                 ]
         self.textures = {}
@@ -82,29 +82,6 @@ class Renderer:
             arr.append(row)
         return count, arr
 
-    # def add_shadow(self, surface, neighbourcount, neighbors, blockname=None):
-    #     if blockname == "water":
-    #         return
-    #     shadow = pygame.Surface(surface.get_size())
-    #     shadow.fill((0, 0, 0))
-    #     shadow.set_alpha(neighbourcount * (255 // 8))
-    #     # If any of the adjacent blocks are air, not the diagonal ones, then instead make the alpha neighborcount * (255 // 12)
-    #     for y, row in enumerate(neighbors):
-    #         for x, block in enumerate(row):
-    #             if block:
-    #                 continue
-    #             if y == 0 and x == 0:
-    #                 continue
-    #             if y == 0 and x == 2:
-    #                 continue
-    #             if y == 2 and x == 0:
-    #                 continue
-    #             if y == 2 and x == 2:
-    #                 continue
-    #             shadow.fill((0, 0, 0))
-    #             shadow.set_alpha(neighbourcount * (255 // 12))
-    #     surface.blit(shadow, (0, 0))
-
     def add_shadow(self, surface, neighbourcount, neighbors, block=None):
         if block != None:
             if block.name == "water":
@@ -143,7 +120,7 @@ class Renderer:
 
         self.background.draw(isNight)
 
-        special_naming_cases = ["oak_stairs", "oak_slab", "redstone_dust", "redstone_repeater", "redstone_lamp", "water"]
+        special_naming_cases = ["oak_stairs", "oak_slab", "redstone_dust", "redstone_repeater", "redstone_lamp", "redstone_observer", "water"]
 
         for y, column in enumerate(world):
             for x, block in enumerate(column):
@@ -167,6 +144,8 @@ class Renderer:
                     texture_to_use = "redstone_repeater_" + block.getattr("state")
                 elif block.name == "redstone_lamp":
                     texture_to_use = "redstone_lamp_" + block.getattr("state")
+                elif block.name == "redstone_observer":
+                    texture_to_use = "redstone_observer_" + block.getattr("orientation")
                 elif block.name == "water":
                     # Default texture is "water"
                     texture_to_use = "water"
@@ -221,6 +200,11 @@ class Renderer:
                     power = block.getattr("power")
                     text = self.small_font.render(str(power), True, (255, 255, 255))
                     self.screen.blit(text, (x * self.game_block_scale, y * self.game_block_scale))
+                if block.name == "redstone_observer":
+                    # Show its orientation
+                    orientation = block.getattr("orientation")
+                    text = self.small_font.render(orientation, True, (255, 255, 255))
+                    self.screen.blit(text, ((x + 1) * self.game_block_scale, y * self.game_block_scale))
                 if block.name == "redstone_repeater":
                     if block.getattr("orientation") == "r":
                         texture = pygame.transform.flip(texture, True, False)
@@ -275,6 +259,8 @@ class Renderer:
             texture_to_use = "redstone_repeater_" + selected_block.getattr("state")
         elif selected_block.name == "redstone_lamp":
             texture_to_use = "redstone_lamp_" + selected_block.getattr("state")
+        elif selected_block.name == "redstone_observer":
+            texture_to_use = "redstone_observer_" + selected_block.getattr("orientation")
         else:
             texture_to_use = selected_block.name
 

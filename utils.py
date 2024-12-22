@@ -61,8 +61,39 @@ class Block:
 
     @staticmethod
     def from_string(string):
-        # Turns a string like "dirt[color=\"brown\"]" to a Block object
         import re
+
+        def parse_attributes(attr_string):
+            """Parse attributes with support for nested brackets."""
+            attr = {}
+            key, value, depth = "", "", 0
+            in_key = True
+            for char in attr_string:
+                if char == "[":
+                    depth += 1
+                elif char == "]":
+                    depth -= 1
+                elif char == "=" and depth == 0:
+                    in_key = False
+                    continue
+                elif char == "," and depth == 0:
+                    attr[key.strip()] = value.strip()
+                    key, value = "", ""
+                    in_key = True
+                    continue
+
+                if in_key:
+                    key += char
+                else:
+                    value += char
+            if key:  # Add the final key-value pair
+                attr[key.strip()] = value.strip()
+
+            # Remove surrounding quotes from values
+            for k, v in attr.items():
+                if v.startswith("\"") and v.endswith("\""):
+                    attr[k] = v[1:-1]
+            return attr
 
         # Match the block name and attributes
         match = re.match(r"(\w+)\[(.*)\]", string)
@@ -75,16 +106,20 @@ class Block:
         name = match.group(1)
         attr_string = match.group(2)
 
-        # Parse attributes into a dictionary
-        attr = {}
-        if attr_string:
-            # Split attributes by commas and parse key="value" pairs
-            attr_pairs = attr_string.split(", ")
-            for pair in attr_pairs:
-                key, value = pair.split("=")
-                attr[key] = value.strip("\"")  # Remove surrounding quotes
+        # Parse attributes
+        attr = parse_attributes(attr_string)
 
         return Block(name=name, attr=attr)
+
+    # How a block is equal to another block
+    def __eq__(self, other):
+        if not isinstance(other, Block):
+            return False
+        return self.name == other.name and self.attr == other.attr
+
+    # How a block is not equal to another block
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 class WorldGenerator:
     def __init__(self, seed, width, height, scale=0.1):
@@ -271,6 +306,10 @@ class Player:
                 Block("redstone_repeater", {"state": "off", "orientation": "l"}), # Unpowered left
                 Block("redstone_repeater", {"state": "off", "orientation": "r"}), # Unpowered right
                 Block("redstone_lamp", {"state": "off"}), # Unpowered
+                Block("redstone_observer", {"state": "off", "orientation": "l", "last": "air[]"}), # Unpowered left
+                Block("redstone_observer", {"state": "off", "orientation": "r", "last": "air[]"}), # Unpowered right
+                Block("redstone_observer", {"state": "off", "orientation": "u", "last": "air[]"}), # Unpowered up
+                Block("redstone_observer", {"state": "off", "orientation": "d", "last": "air[]"}), # Unpowered down
                 Block("redstone_block"),
         ]
         self.collision_ignore = ["air", "water"]
@@ -612,13 +651,81 @@ def update_world(world, tick):
                             continue
                         if world[ny][nx].name == "redstone_block":
                             should_power_up = True
-                        if "redstone" in world[ny][nx].name:
+                        if world[ny][nx].name == "redstone_dust":
                             if world[ny][nx].getattr("state") == "on":
                                 should_power_up = True
+                        if world[ny][nx].name == "redstone_repeater":
+                            if world[ny][nx].getattr("state") == "on":
+                                should_power_up = True
+                        if world[ny][nx].name == "redstone_observer":
+                            if world[ny][nx].getattr("state") == "on":
+                                # If the observer's power direction is this block, power up
+                                orientation = world[ny][nx].getattr("orientation")
+                                if orientation == "l" and nx == x - 1:
+                                    should_power_up = True
+                                if orientation == "r" and nx == x + 1:
+                                    should_power_up = True
+                                if orientation == "u" and ny == y - 1:
+                                    should_power_up = True
+                                if orientation == "d" and ny == y + 1:
+                                    should_power_up = True
                 if should_power_up:
                     new_world[y][x] = Block("redstone_lamp", {"state": "on"})
                 else:
                     new_world[y][x] = Block("redstone_lamp", {"state": "off"})
+
+            # Redstone observer power logic
+            if world[y][x].name == "redstone_observer" and tick % 2 == 0:
+                should_power_up = False
+                orientation = world[y][x].getattr("orientation")
+                last = world[y][x].getattr("last")
+                new_last = last
+                last_block = Block.from_string(last)
+                if orientation == "l":
+                    if x - 1 >= 0:
+                        if world[y][x - 1] != last_block:
+                            should_power_up = True
+                            new_last = world[y][x - 1].__repr__()
+                if orientation == "r":
+                    if x + 1 < len(world[y]):
+                        if world[y][x + 1] != last_block:
+                            should_power_up = True
+                            new_last = world[y][x + 1].__repr__()
+                if orientation == "u":
+                    if y - 1 >= 0:
+                        if world[y - 1][x] != last_block:
+                            should_power_up = True
+                            new_last = world[y - 1][x].__repr__()
+                if orientation == "d":
+                    if y + 1 < len(world):
+                        if world[y + 1][x] != last_block:
+                            should_power_up = True
+                            new_last = world[y + 1][x].__repr__()
+                if should_power_up:
+                    new_world[y][x] = Block("redstone_observer", {"state": "on", "orientation": orientation, "last": new_last})
+                else:
+                    new_world[y][x] = Block("redstone_observer", {"state": "off", "orientation": orientation, "last": new_last})
+
+                # Make nearby blocks power up
+                if should_power_up:
+                    power_dir = [0, 0]
+                    # Changes depending on the orientation
+                    if orientation == "l":
+                        power_dir = [x + 1, y]
+                    if orientation == "r":
+                        power_dir = [x - 1, y]
+                    if orientation == "d":
+                        power_dir = [x, y - 1]
+                    if orientation == "u":
+                        power_dir = [x, y + 1]
+                    if power_dir[0] >= 0 and power_dir[0] < len(world[y]) and power_dir[1] >= 0 and power_dir[1] < len(world):
+                        if world[power_dir[1]][power_dir[0]].name == "redstone_dust":
+                            new_world[power_dir[1]][power_dir[0]] = Block("redstone_dust", {"state": "on", "power": "15"})
+                        if world[power_dir[1]][power_dir[0]].name == "redstone_repeater":
+                            new_world[power_dir[1]][power_dir[0]] = Block("redstone_repeater", {"state": "on", "orientation": world[y][x].getattr("orientation")})
+                        if world[power_dir[1]][power_dir[0]].name == "redstone_lamp":
+                            new_world[power_dir[1]][power_dir[0]] = Block("redstone_lamp", {"state": "on"})
+                            print("Powered up lamp")
 
     # Return the updated world
     return new_world
